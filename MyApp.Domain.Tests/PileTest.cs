@@ -33,7 +33,7 @@ public class PileTest
     {
         string[] players = { "Timmy" };
         Pile pile = new(players);
-        Assert.Equal(Colour.BLUE, pile.ActiveColour);
+        Assert.Equal(Colour.ALL, pile.ActiveColour);
     }
 
     [Fact]
