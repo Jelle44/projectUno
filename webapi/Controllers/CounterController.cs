@@ -9,65 +9,71 @@ namespace webapi.Controllers;
 [Route("[controller]/[action]")]
 public class CounterController : ControllerBase
 { 
-    static Dictionary<string, Uno> games = new Dictionary<string, Uno>();
+    static Dictionary<string, Deck> games = new Dictionary<string, Deck>();
 
     [HttpGet()]
-    public UnoDTO NewGame()
+    public DeckDTO NewGame()
     {
         string[] players = { "Timmy", "Jimmy" };
-        //if !exists: create new game + return player1, else get game + return player 2
         if (!games.ContainsKey("password"))
         {
-            Uno unoGame = new(players);
+            Deck unoGame = new(players);
             games["password"] = unoGame;
-            return new UnoDTO(unoGame, players[0]);
+            return new DeckDTO(unoGame, players[0], null);
         } else
         {
-            return new UnoDTO(games["password"], players[1]);
-        }
-        
-        
-        
+            var unoGame = games["password"];
+            if(unoGame.PlayerHasNoCardsInHand())
+            {
+                return new DeckDTO(unoGame, players[1], unoGame.Pile.Owner!.Name);
+            }
+            return new DeckDTO(games["password"], players[1], null);
+        } 
     }
 
     [HttpPost()]
-    public UnoDTO DrawCard(NameDTO playerId)
+    public DeckDTO DrawCard(NameDTO playerId)
     {
         var unoGame = games["password"];
-        unoGame.DrawCard(playerId.Name);
-        unoGame.Counter = Uno.DecreaseCounter(unoGame.Counter);
-        return new UnoDTO(unoGame, playerId.Name);
+        unoGame.DrawCard(playerId.Name!);
+
+        return new DeckDTO(unoGame, playerId.Name!, null);
     }
 
     [HttpPost()]
-    public UnoDTO PlayCard(PlayCardDTO card)
+    public DeckDTO PlayCard(PlayCardDTO card)
     {
         var unoGame = games["password"];
-        Card[] playerHand = unoGame.Cards.Where(unoCard => unoCard.Owner?.Name == card.Name && !unoCard.IsPlayed).ToArray();
-        Card selectedCard = playerHand[card.CardIndex];
-        selectedCard.PlayCard();
-        string cardOwner = selectedCard.Owner!.Name; 
-        return new UnoDTO(unoGame, cardOwner);
-    }
 
-    [HttpGet]
-    public IEnumerable<string> GetSessionInfo()
-        //TODO no longer needed
-    {
-        List<string> sessionInfo = new List<string>();
+        CardSuperClass.Colour colour = Enum.Parse<CardSuperClass.Colour>(card.Colour!);
+        CardSuperClass.Value value = Enum.Parse<CardSuperClass.Value>(card.Value!);
 
-        if (string.IsNullOrWhiteSpace(HttpContext.Session.GetString(SessionVariables.SessionKeyUsername)))
-        {
-            HttpContext.Session.SetString(SessionVariables.SessionKeyUsername, "Timmy");
-            HttpContext.Session.SetString(SessionVariables.SessionKeySessionId, "myUno");// Guid.NewGuid().ToString());
+        CardSuperClass.Colour newColour = colour;
+        if (card.NewColour != null)
+        { 
+            newColour = Enum.Parse<CardSuperClass.Colour>(card.NewColour.ToUpper());
         }
 
-        var userName = HttpContext.Session.GetString(SessionVariables.SessionKeyUsername);
-        var sessionId = HttpContext.Session.GetString(SessionVariables.SessionKeySessionId);
+        string? winner = unoGame.UpdateGameState(card.Name!, value, colour, newColour);
+        string cardOwner = card.Name!;
 
-        sessionInfo.Add(userName);
-        sessionInfo.Add(sessionId);
+        return new DeckDTO(unoGame, cardOwner, winner);
+    }
 
-        return sessionInfo;
+    [HttpPost()]
+    public DeckDTO SignalUno(NameDTO playerId)
+    {
+        var game = games["password"];
+        game.UnoButtonWasPressed(playerId.Name!);
+
+        return new DeckDTO(game, playerId.Name!, null);
+    }
+
+    [HttpPost()]
+    public PlayerDTO ReloadHand(NameDTO playerId)
+    {
+        var game = games["password"];
+
+        return new PlayerDTO(game, playerId.Name!);
     }
 }

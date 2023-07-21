@@ -65,5 +65,23 @@ public class PlayerTest
         Player playerTwo = new(names);
         Assert.Equal("Jimmy", playerTwo.Name);
     }
-}
 
+    [Fact]
+    public void TestPlayersAllHaveCorrectPrevPlayer()
+    {
+        string[] names = { "Timmy", "Jimmy" };
+        Player playerTwo = new(names);
+        Assert.Equal("Timmy", playerTwo.PreviousPlayer.Name);
+        Assert.Equal("Jimmy", playerTwo.NextPlayer.PreviousPlayer.Name);
+    }
+
+    [Fact]
+    public void TestDrawCardSwitchesTurn()
+    {
+        string[] names = { "Timmy", "Jimmy" };
+        Deck game = new(names);
+        game.DrawCard("Timmy");
+
+        Assert.Equal("Timmy", game.Pile.Owner!.Name);
+    }
+}

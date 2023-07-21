@@ -11,9 +11,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession();
-
 builder.Services.AddCors(options =>
 {
 
@@ -28,8 +25,6 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
-app.UseSession();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

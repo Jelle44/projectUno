@@ -1,5 +1,5 @@
 ﻿using MyApp.Domain;
-using static MyApp.Domain.Deck;
+using static MyApp.Domain.CardSuperClass;
 using System.Text.Json.Serialization;
 
 namespace webapi.Models
@@ -7,6 +7,7 @@ namespace webapi.Models
     public class CardDTO
     {
         public string? Path { get; set; }
+        public string? Name { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public Colour ActiveColour { get; set; }
@@ -16,6 +17,7 @@ namespace webapi.Models
 
         public CardDTO(Pile pile)
         {
+            this.Name = pile.Owner!.Name;
             this.Path = pile.Path;
             this.ActiveColour = pile.ActiveColour;
             this.ActiveValue = pile.ActiveValue;
@@ -23,11 +25,10 @@ namespace webapi.Models
 
         public CardDTO(Card card)
         {
+            this.Name = card.Owner!.Name;
             this.Path = card.Path;
             this.ActiveColour = card.ActiveColour;
             this.ActiveValue = card.ActiveValue;
         }
-
-
     }
 }

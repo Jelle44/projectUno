@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using static MyApp.Domain.Deck;
+using static MyApp.Domain.CardSuperClass;
+using static MyApp.Domain.Card;
+using System.Xml.Linq;
 
 namespace MyApp.Domain.Tests;
 public class CardTest
@@ -59,22 +61,36 @@ public class CardTest
     public void TestPlayCardUpdatesPile()
     {
         string[] players = { "Timmy", "Jimmy" };
-        Pile pile = new(players)
-        {
-            //owner is last name in players-array
-            ActiveColour = Colour.BLUE,
-            ActiveValue = Value.FOUR
-        };
-        Card card = new(pile)
-        {
-            Owner = pile.Owner!.NextPlayer, //should be the first player in players-array
-            ActiveColour = Colour.BLUE,
-            ActiveValue = Value.FIVE
-        };
-        card.PlayCard();
-        pile = card.Pile;
-        Assert.Equal(card.Owner, pile.Owner);
+        Deck game = new (players, "Test constructor");
+        Card card = game.DrawCard("Timmy");
+        game.DrawCard("Jimmy");
+
+        Card[] playerHand = { card };
+        PlayCard(game, playerHand, card.ActiveValue, card.ActiveColour, card.ActiveColour);
+
+        Assert.Equal(card.Owner, game.Pile.Owner);
         Assert.Equal(card.ActiveValue, card.Pile.ActiveValue);
         Assert.Equal(card.ActiveColour, card.Pile.ActiveColour);
+    }
+
+    [Fact]
+    public void TestPlayCardChecksForUno()
+    {
+        string[] players = { "Timmy", "Jimmy" };
+        Deck game = new (players, "testConstructor");
+
+        Card cardTimmy = game.DrawCard("Timmy");
+        game.DrawCard("Jimmy");
+        game.DrawCard("Timmy");
+
+        game.Pile.Owner = game.Pile.Owner!.GetPlayerByName("Jimmy");
+        game.UpdateGameState("Timmy", cardTimmy.ActiveValue, cardTimmy.ActiveColour, cardTimmy.ActiveColour);
+
+        Card[] handJimmy = game.Cards.Where(unoCard =>
+                                            unoCard.Owner?.Name == "Jimmy" &&
+                                            !unoCard.IsPlayed)
+                                     .ToArray();
+
+        Assert.Equal(3, handJimmy.Length);
     }
 }

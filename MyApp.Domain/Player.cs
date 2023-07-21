@@ -46,6 +46,7 @@ public class Player
             this.NextPlayer = playerOne;
             this.PreviousPlayer = prevPlayer;
             this.Uno = false;
+            NextPlayer.PreviousPlayer = this;
         }
     }
 
@@ -57,5 +58,10 @@ public class Player
         {
             return NextPlayer.GetPlayerByName(playerName);
         }
+    }
+
+    public void UpdateUno()
+    {
+        this.Uno = !this.Uno;
     }
 }

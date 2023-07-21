@@ -7,7 +7,7 @@ namespace webapi.Models
         public string Name { get; set; }
         public CardDTO[] Hand { get; }
 
-        public PlayerDTO(Uno uno, string name)
+        public PlayerDTO(Deck uno, string name)
         {
             this.Name = name;
 
@@ -16,7 +16,5 @@ namespace webapi.Models
                 .Select(card => new CardDTO(card))
                 .ToArray();
         }
-
-
     }
 }
