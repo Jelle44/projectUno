@@ -1,6 +1,7 @@
 ﻿using MyApp.Domain;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,16 +9,16 @@ using System.Threading.Tasks;
 namespace MyApp.Persistence.Models;
 public class PlayerDbDTO
 {
-        public string Name { get; set; }
-        public CardDbDTO[] Hand { get; }
+    [Key] public int PlayerNameId { get; set; }
+    public string Name { get; set; }
 
-        public PlayerDbDTO(Deck uno, string name)
+    public PlayerDbDTO()
+    {
+        //added for database-purposes
+    }
+
+    public PlayerDbDTO(string name)
         {
             this.Name = name;
-
-            this.Hand = uno.Cards
-                .Where(card => card.Owner?.Name == name && !card.IsPlayed)
-                .Select(card => new CardDbDTO(card))
-                .ToArray();
         }
 }

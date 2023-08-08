@@ -76,4 +76,12 @@ public class CounterController : ControllerBase
 
         return new PlayerDTO(game, playerId.Name!);
     }
+
+    //[HttpPost()]
+    //public DeckDTO SaveGame()
+    //{
+    //    var game = games["password"];
+    //    var savedGame = new DeckDTO(game);
+    //    return savedGame;
+    //}
 }

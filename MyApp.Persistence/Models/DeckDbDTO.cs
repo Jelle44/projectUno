@@ -1,44 +1,44 @@
 ﻿using MyApp.Domain;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyApp.Persistence.Models;
 
 public class DeckDbDTO
 {
+    [Key] public int DeckId { get; set; }
     public int Counter { get; }
 
-    public int HandSizePlayerOne { get; }
-    public int HandSizePlayerTwo { get; }
-
-    public PlayerDbDTO[] Player { get; }
+    public List<PlayerDbDTO> PlayerList { get; }
 
     public CardDbDTO PileTopCard { get; }
+    public CardDbDTO[] Deck { get; }
 
     public string PlayerId { get; set; }
 
-    public bool IsGameOver { get; set; } = false;
-
-    public DeckDbDTO(Deck uno, string playerId, string? winner)
+    public DeckDbDTO()
     {
-        PlayerId = playerId;
+        //added for database-purposes
+    }
+
+    public DeckDbDTO(Deck uno, string playerId)
+    {
         Counter = uno.Counter;
-        HandSizePlayerOne = uno.Cards.Where(card =>
-                                            card.Owner?.Name == "Timmy" &&
-                                            !card.IsPlayed)
-                                     .ToArray()
-                                     .Length;
-        HandSizePlayerTwo = uno.Cards.Where(card =>
-                                            card.Owner?.Name == "Jimmy" &&
-                                            !card.IsPlayed)
-                                     .ToArray()
-                                     .Length;
-        Player = new PlayerDbDTO[1];
-        Player[0] = new PlayerDbDTO(uno, playerId);
+
+        string[] players = uno.CreatePlayerList(playerId);
+        PlayerList = new List<PlayerDbDTO>();
+        foreach (var player in players)
+        {
+            PlayerDbDTO name = new(player);
+            PlayerList.Add(name);
+        }
+
+        List<CardDbDTO> cardList = new();
+        foreach(var card in uno.Cards)
+        {
+            CardDbDTO cardDTO = new(card);
+            cardList.Add(cardDTO);
+        }
 
         PileTopCard = new CardDbDTO(uno.Pile);
-
-        if (winner != null)
-        {
-            IsGameOver = true;
-        }
     }
 }

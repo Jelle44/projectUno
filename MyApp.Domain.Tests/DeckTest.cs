@@ -151,4 +151,14 @@ public class DeckTest
 
         Assert.NotNull(game.UpdateGameState("Timmy", card.ActiveValue, card.ActiveColour, card.ActiveColour));
     }
+
+    [Fact]
+    public void TestGEtPlayerNamesListReturnsListOfAllPlayerNames()
+    {
+        string[] players = { "Timmy", "Jimmy", "Barney" };
+        Deck game = new(players);
+        string[] list = game.CreatePlayerList("Timmy");
+
+        Assert.Equal(3, list.Length);
+    }
 }

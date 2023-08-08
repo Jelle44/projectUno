@@ -362,4 +362,29 @@ public class Deck
                 };
         return testCards;
     }
+
+    public string[] CreatePlayerList(string playerId)
+    {
+        List<string> playerNames = new()
+        {
+            playerId
+        };
+
+        playerNames = GetAllPlayers(playerNames, playerId);
+
+        return playerNames.ToArray();
+    }
+
+    private List<string> GetAllPlayers(List<string> playerNames, string name)
+    {
+        name = Pile.Owner!.GetPlayerByName(name).NextPlayer.Name;
+
+        if (name != playerNames[0])
+        {
+            playerNames.Add(name);
+            GetAllPlayers(playerNames, name);
+        }
+
+        return playerNames;
+    }
 }
