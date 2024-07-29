@@ -1,3 +1,5 @@
+name: projectUno_$(Date:yyyyMMdd)$(Rev:.r)
+
 image: mcr.microsoft.com/dotnet/sdk:7.0
 
 stages:
@@ -8,25 +10,14 @@ build-job:
   stage: build
   script:
     - echo "Building file"
-#    - dotnet restore
-#    - dotnet build VueTs_ASPdotNet.sln
 
 test-job:
   stage: test
   script:
     - echo "Running tests"
     - dotnet test
-#    - dotnet test VueTs_ASPdotNet.sln --logger:trx --results-directory TestResults "/p:CollectCoverage=true" "/p:CoverletOutput=TestResults/" "/p:MergeWith=TestResults/coverlet.json" "/p:CoverletOutputFormat=\"json,cobertura\"" 
-#  artifacts:
-#    paths:
-#    - TestResults/*
 
-#test-report-job:
-  #stage: test
-  #script:
-    #- echo "Creating test report"
-    #- dotnet restore
-    #- coverlet ./bin/Debug/net7.0/MyApp.Domain.Tests.dll --target "dotnet" --targetargs "test --no-build"
+
 
 
 
