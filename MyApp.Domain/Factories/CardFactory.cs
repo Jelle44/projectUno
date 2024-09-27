@@ -1,125 +1,81 @@
-﻿using System.Runtime.CompilerServices;
-using static MyApp.Domain.CardSuperClass;
+﻿using MyApp.Domain.Enums;
+using System.Runtime.CompilerServices;
+using MyApp.Domain.EnumExtensionMethods;
 
 [assembly: InternalsVisibleTo("MyApp.Domain.Tests")]
 namespace MyApp.Domain.Factories
 {
     internal class CardFactory : ICardFactory
     {
+        private readonly Pile _pile;
+
+        private readonly List<Card> _allCards = new();
+        public Card[] AllCards
+        {
+            get
+            {
+                if (_allCards.Count == 0)
+                {
+                    InitialiseAllCards(_pile);
+                }
+
+                return _allCards.ToArray();
+            }
+        }
+
+        public CardFactory(Pile pile)
+        {
+            _pile = pile;
+        }
+
         public Card[] InitialiseAllCards(Pile pile)
-        { //every card is in the list twice, DRAW4 & CHANGE each have 4 copies, every colour has only ONE 0.
-            Card[] allCards =
-                    {
-                new (pile, Colour.RED, Value.ZERO),
-                new (pile, Colour.RED, Value.ONE),
-                new (pile, Colour.RED, Value.ONE),
-                new (pile, Colour.RED, Value.TWO),
-                new (pile, Colour.RED, Value.TWO),
-                new (pile, Colour.RED, Value.THREE),
-                new (pile, Colour.RED, Value.THREE),
-                new (pile, Colour.RED, Value.FOUR),
-                new (pile, Colour.RED, Value.FOUR),
-                new (pile, Colour.RED, Value.FIVE),
-                new (pile, Colour.RED, Value.FIVE),
-                new (pile, Colour.RED, Value.SIX),
-                new (pile, Colour.RED, Value.SIX),
-                new (pile, Colour.RED, Value.SEVEN),
-                new (pile, Colour.RED, Value.SEVEN),
-                new (pile, Colour.RED, Value.EIGHT),
-                new (pile, Colour.RED, Value.EIGHT),
-                new (pile, Colour.RED, Value.NINE),
-                new (pile, Colour.RED, Value.NINE),
-                new (pile, Colour.RED, Value.DRAW2),
-                new (pile, Colour.RED, Value.DRAW2),
-                new (pile, Colour.RED, Value.REVERSE),
-                new (pile, Colour.RED, Value.REVERSE),
-                new (pile, Colour.RED, Value.SKIP),
-                new (pile, Colour.RED, Value.SKIP),
-                new (pile, Colour.YELLOW, Value.ZERO),
-                new (pile, Colour.YELLOW, Value.ONE),
-                new (pile, Colour.YELLOW, Value.ONE),
-                new (pile, Colour.YELLOW, Value.TWO),
-                new (pile, Colour.YELLOW, Value.TWO),
-                new (pile, Colour.YELLOW, Value.THREE),
-                new (pile, Colour.YELLOW, Value.THREE),
-                new (pile, Colour.YELLOW, Value.FOUR),
-                new (pile, Colour.YELLOW, Value.FOUR),
-                new (pile, Colour.YELLOW, Value.FIVE),
-                new (pile, Colour.YELLOW, Value.FIVE),
-                new (pile, Colour.YELLOW, Value.SIX),
-                new (pile, Colour.YELLOW, Value.SIX),
-                new (pile, Colour.YELLOW, Value.SEVEN),
-                new (pile, Colour.YELLOW, Value.SEVEN),
-                new (pile, Colour.YELLOW, Value.EIGHT),
-                new (pile, Colour.YELLOW, Value.EIGHT),
-                new (pile, Colour.YELLOW, Value.NINE),
-                new (pile, Colour.YELLOW, Value.NINE),
-                new (pile, Colour.YELLOW, Value.DRAW2),
-                new (pile, Colour.YELLOW, Value.DRAW2),
-                new (pile, Colour.YELLOW, Value.REVERSE),
-                new (pile, Colour.YELLOW, Value.REVERSE),
-                new (pile, Colour.YELLOW, Value.SKIP),
-                new (pile, Colour.YELLOW, Value.SKIP),
-                new (pile, Colour.GREEN, Value.ZERO),
-                new (pile, Colour.GREEN, Value.ONE),
-                new (pile, Colour.GREEN, Value.ONE),
-                new (pile, Colour.GREEN, Value.TWO),
-                new (pile, Colour.GREEN, Value.TWO),
-                new (pile, Colour.GREEN, Value.THREE),
-                new (pile, Colour.GREEN, Value.THREE),
-                new (pile, Colour.GREEN, Value.FOUR),
-                new (pile, Colour.GREEN, Value.FOUR),
-                new (pile, Colour.GREEN, Value.FIVE),
-                new (pile, Colour.GREEN, Value.FIVE),
-                new (pile, Colour.GREEN, Value.SIX),
-                new (pile, Colour.GREEN, Value.SIX),
-                new (pile, Colour.GREEN, Value.SEVEN),
-                new (pile, Colour.GREEN, Value.SEVEN),
-                new (pile, Colour.GREEN, Value.EIGHT),
-                new (pile, Colour.GREEN, Value.EIGHT),
-                new (pile, Colour.GREEN, Value.NINE),
-                new (pile, Colour.GREEN, Value.NINE),
-                new (pile, Colour.GREEN, Value.DRAW2),
-                new (pile, Colour.GREEN, Value.DRAW2),
-                new (pile, Colour.GREEN, Value.REVERSE),
-                new (pile, Colour.GREEN, Value.REVERSE),
-                new (pile, Colour.GREEN, Value.SKIP),
-                new (pile, Colour.GREEN, Value.SKIP),
-                new (pile, Colour.BLUE, Value.ZERO),
-                new (pile, Colour.BLUE, Value.ONE),
-                new (pile, Colour.BLUE, Value.ONE),
-                new (pile, Colour.BLUE, Value.TWO),
-                new (pile, Colour.BLUE, Value.TWO),
-                new (pile, Colour.BLUE, Value.THREE),
-                new (pile, Colour.BLUE, Value.THREE),
-                new (pile, Colour.BLUE, Value.FOUR),
-                new (pile, Colour.BLUE, Value.FOUR),
-                new (pile, Colour.BLUE, Value.FIVE),
-                new (pile, Colour.BLUE, Value.FIVE),
-                new (pile, Colour.BLUE, Value.SIX),
-                new (pile, Colour.BLUE, Value.SIX),
-                new (pile, Colour.BLUE, Value.SEVEN),
-                new (pile, Colour.BLUE, Value.SEVEN),
-                new (pile, Colour.BLUE, Value.EIGHT),
-                new (pile, Colour.BLUE, Value.EIGHT),
-                new (pile, Colour.BLUE, Value.NINE),
-                new (pile, Colour.BLUE, Value.NINE),
-                new (pile, Colour.BLUE, Value.DRAW2),
-                new (pile, Colour.BLUE, Value.DRAW2),
-                new (pile, Colour.BLUE, Value.REVERSE),
-                new (pile, Colour.BLUE, Value.REVERSE),
-                new (pile, Colour.BLUE, Value.SKIP),
-                new (pile, Colour.BLUE, Value.SKIP),
-                new (pile, Colour.WILD, Value.CHANGE),
-                new (pile, Colour.WILD, Value.CHANGE),
-                new (pile, Colour.WILD, Value.CHANGE),
-                new (pile, Colour.WILD, Value.CHANGE),
-                new (pile, Colour.WILD, Value.DRAW4),
-                new (pile, Colour.WILD, Value.DRAW4),
-                new (pile, Colour.WILD, Value.DRAW4),
-                new (pile, Colour.WILD, Value.DRAW4)
-                    };
-            return allCards;
+        {
+            //every card is in the list twice, DRAW4 & CHANGE each have 4 copies, every colour has only ONE 0.
+            CreateCardOfEachValueForColour(pile, Colour.BLUE);
+            CreateCardOfEachValueForColour(pile, Colour.GREEN);
+            CreateCardOfEachValueForColour(pile, Colour.RED);
+            CreateCardOfEachValueForColour(pile, Colour.YELLOW);
+            CreateColourChangeCards(pile);
+
+            return _allCards.ToArray();
+        }
+
+        private void CreateColourChangeCards(Pile pile)
+        {
+            CreateMultipleCards(4, pile, Colour.WILD, Value.CHANGE);
+            CreateMultipleCards(4, pile, Colour.WILD, Value.DRAW4);
+        }
+
+        internal void CreateMultipleCards(int numberToCreate, Pile pile, Colour colour, Value value)
+        {
+            if (numberToCreate < 1)
+            {
+                return;
+            }
+
+            _allCards.Add(new Card(pile, colour, value));
+            CreateMultipleCards(numberToCreate - 1, pile, colour, value);
+        }
+
+        private void CreateCardOfEachValueForColour(Pile pile, Colour colour)
+        {
+            if (colour == Colour.WILD)
+            {
+                throw new InvalidOperationException("Trying to create invalid cards");
+            }
+
+            var values = Enum.GetValues<Value>();
+
+            foreach (var value in values)
+            {
+                if (value.IsInvalidForColours())
+                {
+                    continue;
+                }
+
+                var numberToCreate = value == Value.ZERO ? 1 : 2;
+                CreateMultipleCards(numberToCreate, pile, colour, value);
+            }
         }
     }
 }

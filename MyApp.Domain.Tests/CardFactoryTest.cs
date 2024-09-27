@@ -1,4 +1,6 @@
-﻿using MyApp.Domain.Factories;
+﻿using FluentAssertions;
+using MyApp.Domain.Enums;
+using MyApp.Domain.Factories;
 using Xunit;
 
 namespace MyApp.Domain.Tests
@@ -9,12 +11,29 @@ namespace MyApp.Domain.Tests
         public void InitialiseCardShouldReturnCard()
         {
             //Arrange
-            CardFactory cardFactory = new();
+            CardFactory cardFactory = new(null);
 
             //Act
             //cardFactory.InitialiseAllCards()
 
             //Assert
+        }
+
+        [Fact]
+        public void CreateMultipleCardsShouldCreateCardsEqualToGivenAmount()
+        {
+            //Arrange
+            const int expectedCount = 2;
+            const string playerName = "Jimmy";
+            string[] playerNames = { playerName };
+            Pile pile = new(playerNames);
+            CardFactory cardFactory = new(null);
+
+            //Act
+            cardFactory.CreateMultipleCards(expectedCount, pile, Colour.RED, Value.DRAW2);
+
+            //Assert
+            cardFactory.AllCards.Length.Should().Be(expectedCount);
         }
     }
 }

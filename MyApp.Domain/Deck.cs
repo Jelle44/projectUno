@@ -13,7 +13,7 @@ public class Deck
     public Card[] Cards { get; }
 
     public Deck(string[] players)
-        : this(players, new CardFactory())
+        : this(players, new CardFactory(new Pile(players))) //TODO: possible mismatch between pile created in ctor and pile set as field for Deck.cs
     {
     }
 
