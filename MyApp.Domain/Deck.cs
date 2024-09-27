@@ -115,7 +115,7 @@ public class Deck
 
         Player playerOfLastCard = Pile.Owner;
 
-        if (Pile.ActiveValue == Value.SKIPTURN)
+        if (Pile.ActiveValue == Value.SKIP)
         {
             playerOfLastCard = Pile.GetOwnerOfSkipTurn();
         }
@@ -206,7 +206,7 @@ public class Deck
     {
         var owner = this.Pile.Owner;
 
-        if (Pile.ActiveValue == Value.SKIPTURN)
+        if (Pile.ActiveValue == Value.SKIP)
         {
             owner = Pile.GetOwnerOfSkipTurn();
         }

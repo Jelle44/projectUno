@@ -44,7 +44,7 @@ public class PileTest
         Pile pile = new(players);
 
         //Assert
-        Assert.Equal(Colour.ALL, pile.ActiveColour);
+        Assert.Equal(Colour.WILD, pile.ActiveColour);
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public class PileTest
         {
             Owner = pile.Owner!.GetPlayerByName("Jimmy"),
             ActiveColour = Colour.RED,
-            ActiveValue = Value.SKIPTURN
+            ActiveValue = Value.SKIP
         };
         Card cardBarney = new(pile)
         {
@@ -226,8 +226,8 @@ public class PileTest
         Card cardTimmy = new(pile)
         {
             Owner = pile.Owner,
-            ActiveValue = Value.RECOLOUR,
-            ActiveColour = Colour.ALL
+            ActiveValue = Value.CHANGE,
+            ActiveColour = Colour.WILD
         };
 
         Card[] playerTwoHand = { cardTimmy };
@@ -265,7 +265,7 @@ public class PileTest
         Card cardTimmy = game.DrawCard("Timmy");
 
         cardTimmy.ActiveColour = Colour.BLUE;
-        cardTimmy.ActiveValue = Value.DRAW_TWO;
+        cardTimmy.ActiveValue = Value.DRAW2;
 
         game.Pile.ActiveColour = Colour.BLUE;
 
@@ -290,8 +290,8 @@ public class PileTest
         game.DrawCard("Timmy");
         Card cardTimmy = game.DrawCard("Timmy");
 
-        cardTimmy.ActiveColour = Colour.ALL;
-        cardTimmy.ActiveValue = Value.DRAW_FOUR;
+        cardTimmy.ActiveColour = Colour.WILD;
+        cardTimmy.ActiveValue = Value.DRAW4;
 
         game.Pile.ActiveColour = Colour.BLUE;
 

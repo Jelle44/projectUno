@@ -116,7 +116,7 @@ public class DeckTest
 
         //Act
         Card cardTimmy = game.DrawCard("Timmy");
-        cardTimmy.ActiveValue = Value.SKIPTURN;
+        cardTimmy.ActiveValue = Value.SKIP;
         game.DrawCard("Jimmy");
 
         Card otherCard = game.DrawCard("Timmy");

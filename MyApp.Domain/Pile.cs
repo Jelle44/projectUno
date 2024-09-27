@@ -15,7 +15,7 @@ public class Pile : CardSuperClass
     public Pile(String[] names)
     {
         this.Owner = new Player(names);
-        this.ActiveColour = Colour.ALL;
+        this.ActiveColour = Colour.WILD;
         this.ActiveValue = Value.FOUR;
         this.TurnOrderIsReversed = false;
         this.Path = "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/fed3bb24-454f-4bdf-a721-6aa8f23e7cef/d9gnihf-ec16caeb-ec9c-4870-9480-57c7711d844f.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2ZlZDNiYjI0LTQ1NGYtNGJkZi1hNzIxLTZhYThmMjNlN2NlZlwvZDlnbmloZi1lYzE2Y2FlYi1lYzljLTQ4NzAtOTQ4MC01N2M3NzExZDg0NGYucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.kp5EommPFQl1sDPPtC-p8JloXDTm3CyNUgoievwh8Kw";
@@ -60,7 +60,7 @@ public class Pile : CardSuperClass
 
     private void DrawCorrectAmountOfCards(Deck deck, Card card)
     {
-        if(card.ActiveValue == Value.DRAW_FOUR)
+        if(card.ActiveValue == Value.DRAW4)
         {
             deck.DrawTwoCards(GetVictim(card));
         }
@@ -80,16 +80,16 @@ public class Pile : CardSuperClass
 
     private bool CardIsDrawCard(Card card)
     {
-        return card.ActiveValue == Value.DRAW_TWO ||
-               card.ActiveValue == Value.DRAW_FOUR;
+        return card.ActiveValue == Value.DRAW2 ||
+               card.ActiveValue == Value.DRAW4;
     }
 
     private bool IsCardAllowed(Card card)
     {
         return (this.ActiveColour == card.ActiveColour ||
                 this.ActiveValue == card.ActiveValue ||
-                this.ActiveColour == Colour.ALL ||
-                card.ActiveColour == Colour.ALL) &&
+                this.ActiveColour == Colour.WILD ||
+                card.ActiveColour == Colour.WILD) &&
                 CheckCurrentTurnHolder(card);
     }
 
@@ -124,7 +124,7 @@ public class Pile : CardSuperClass
 
     private Player CheckSkipTurn(Card card)
     {
-        if(card.ActiveValue == Value.SKIPTURN)
+        if(card.ActiveValue == Value.SKIP)
         {
             return PerformSkipTurn(card);
         }

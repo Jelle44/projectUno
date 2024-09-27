@@ -20,7 +20,7 @@ public abstract class CardSuperClass
 
     public enum Colour
     {
-        ALL,
+        WILD,
         BLUE,
         GREEN,
         RED,
@@ -29,10 +29,10 @@ public abstract class CardSuperClass
     public enum Value
     {
         ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE,
-        DRAW_TWO,
-        DRAW_FOUR,
-        RECOLOUR,
+        DRAW2,
+        DRAW4,
+        CHANGE,
         REVERSE,
-        SKIPTURN
+        SKIP
     }
 }
