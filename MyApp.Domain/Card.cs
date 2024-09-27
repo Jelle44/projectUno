@@ -20,7 +20,7 @@
 
             var colourString = ActiveColour.ToString().ToLower();
 
-            if ((int)value <= 9)
+            if (CardHasNumberValue(value))
             {
                 var valueInt = (int)value;
                 Path = $"http://unocardinfo.victorhomedia.com/graphics/uno_card-{colourString}{valueInt}.png";
@@ -31,6 +31,11 @@
                 Path = $"http://unocardinfo.victorhomedia.com/graphics/uno_card-{colourString}{valueString}.png";
             }
 
+        }
+
+        private static bool CardHasNumberValue(Value value)
+        {
+            return (int)value <= 9;
         }
 
         public static void PlayCard(Deck deck, Card[] playerHand, Value value, Colour colour, Colour newColour)
