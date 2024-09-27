@@ -78,8 +78,7 @@ public class PileTest
     {
         //Arrange
         string[] players = { "Timmy" };
-        var cardFactory = new Mock<ICardFactory>();
-        Deck deck = new(players, cardFactory.Object);
+        Deck deck = new(players);
         Pile pile = new(players)
         { 
             ActiveColour = Colour.BLUE,
@@ -106,8 +105,7 @@ public class PileTest
     {
         //Arrange
         string[] players = { "Timmy" };
-        var cardFactory = new Mock<ICardFactory>();
-        Deck deck = new(players, cardFactory.Object);
+        Deck deck = new(players);
         Pile pile = new(players)
         {
             ActiveColour = Colour.BLUE,
@@ -135,8 +133,7 @@ public class PileTest
     {
         //Arrange
         string[] players = { "Timmy", "Jimmy" };
-        var cardFactory = new Mock<ICardFactory>();
-        Deck deck = new(players, cardFactory.Object);
+        Deck deck = new(players);
         Pile pile = new(players);
         Card card = new(pile)
         {
@@ -160,8 +157,7 @@ public class PileTest
     {
         //Arrange
         string[] players = { "Timmy", "Jimmy", "Barney" };
-        var cardFactory = new Mock<ICardFactory>();
-        Deck deck = new(players, cardFactory.Object);
+        Deck deck = new(players);
         Pile pile = new(players);
         Card cardJimmy = new(pile)
         {
@@ -195,8 +191,7 @@ public class PileTest
     {
         //Arrange
         string[] players = { "Timmy", "Jimmy", "Barney" };
-        var cardFactory = new Mock<ICardFactory>();
-        Deck deck = new(players, cardFactory.Object);
+        Deck deck = new(players);
         Pile pile = new(players);
         Card cardJimmy = new(pile)
         {
@@ -236,8 +231,7 @@ public class PileTest
         };
 
         Card[] playerTwoHand = { cardTimmy };
-        var cardFactory = new Mock<ICardFactory>();
-        Deck deck = new(players, cardFactory.Object);
+        Deck deck = new(players);
 
         PlayCard(deck, playerTwoHand, cardTimmy.ActiveValue, cardTimmy.ActiveColour, cardTimmy.ActiveColour);
 
@@ -253,8 +247,7 @@ public class PileTest
     {
         //Arrange
         string[] players = { "Timmy", "Jimmy" };
-        var cardFactory = new Mock<ICardFactory>();
-        Deck game = new (players, cardFactory.Object);
+        Deck game = new (players);
 
         game.DrawCard("Timmy");
 

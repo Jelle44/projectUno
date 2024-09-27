@@ -13,10 +13,9 @@ public class DeckTest
     {
         //Arrange
         string[] playerOne = { "Timmy" };
-        var cardFactory = new Mock<ICardFactory>();
 
         //Act
-        Deck uno = new(playerOne, cardFactory.Object);
+        Deck uno = new(playerOne);
 
         //Assert
         Assert.Equal(100, uno.Counter);
@@ -33,9 +32,7 @@ public class DeckTest
     {
         //Arrange
         string[] playerOne = { "Timmy" };
-
-        var cardFactory = new Mock<ICardFactory>();
-        Deck game = new(playerOne, cardFactory.Object);
+        Deck game = new(playerOne);
 
         //Act
         var hand = game.DrawCard("Timmy");
@@ -96,8 +93,7 @@ public class DeckTest
     {
         //Arrange
         string[] playerOne = { "Timmy" };
-        var cardFactory = new Mock<ICardFactory>();
-        Deck game = new(playerOne, cardFactory.Object);
+        Deck game = new(playerOne);
 
         //Act
         game.UnoButtonWasPressed("Timmy");
@@ -166,8 +162,7 @@ public class DeckTest
     {
         //Arrange
         string[] players = { "Timmy" };
-        var cardFactory = new Mock<ICardFactory>();
-        Deck game = new(players, cardFactory.Object);
+        Deck game = new(players);
 
         //Act
         Card[] handTimmy = game.Cards.Where(unoCard =>
@@ -201,11 +196,10 @@ public class DeckTest
     {
         //Arrange
         string[] players = { "Timmy", "Jimmy", "Barney" };
-        var cardFactory = new Mock<ICardFactory>();
-        Deck game = new(players, cardFactory.Object);
+        Deck game = new(players);
 
         //Act
-        string[] list = game.CreatePlayerList("Timmy");
+        var list = game.CreatePlayerList("Timmy");
 
         //Assert
         Assert.Equal(3, list.Length);

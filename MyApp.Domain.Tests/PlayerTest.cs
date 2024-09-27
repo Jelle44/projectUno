@@ -117,8 +117,7 @@ public class PlayerTest
     {
         //Arrange
         string[] names = { "Timmy", "Jimmy" };
-        var cardFactory = new Mock<ICardFactory>();
-        Deck game = new(names, cardFactory.Object);
+        Deck game = new(names);
 
         //Act
         game.DrawCard("Timmy");
