@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentAssertions;
 using Xunit;
-using static MyApp.Domain.CardSuperClass;
 using static MyApp.Domain.Card;
-using System.Xml.Linq;
+using static MyApp.Domain.CardSuperClass;
 
 namespace MyApp.Domain.Tests;
 public class CardTest
@@ -92,5 +87,37 @@ public class CardTest
                                      .ToArray();
 
         Assert.Equal(3, handJimmy.Length);
+    }
+
+    [Fact]
+    public void WhenColourAndNormalValueArePassedCardConstructorShouldSetPathWithCorrectColourAndValue()
+    {
+        //Arrange
+        const string expected = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red0.png";
+
+        //Act
+        Card card = new(null, Colour.RED, Value.ZERO);
+
+        //Assert
+        var actual = card.Path;
+        actual.Should().NotBeNull();
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("http://unocardinfo.victorhomedia.com/graphics/uno_card-wildchange.png", Colour.WILD, Value.CHANGE)]
+    [InlineData("http://unocardinfo.victorhomedia.com/graphics/uno_card-redskip.png", Colour.RED, Value.SKIP)]
+    [InlineData("http://unocardinfo.victorhomedia.com/graphics/uno_card-redreverse.png", Colour.RED, Value.REVERSE)]
+    [InlineData("http://unocardinfo.victorhomedia.com/graphics/uno_card-reddraw2.png", Colour.RED, Value.DRAW2)]
+    [InlineData("http://unocardinfo.victorhomedia.com/graphics/uno_card-wilddraw4.png", Colour.WILD, Value.DRAW4)]
+    public void WhenChangeValueCardIsPassedCardConstructorShouldSetPathWithCorrectValue(string expected, Colour colour, Value value)
+    {
+        //Act draw4 draw2
+        Card card = new(null, colour, value);
+
+        //Assert
+        var actual = card.Path;
+        actual.Should().NotBeNull();
+        actual.Should().Be(expected);
     }
 }

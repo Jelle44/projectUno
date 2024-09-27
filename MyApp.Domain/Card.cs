@@ -19,9 +19,18 @@
             IsPlayed = false;
 
             var colourString = ActiveColour.ToString().ToLower();
-            var valueString = ActiveValue.ToString().ToLower();
-            
-            Path = $"http://unocardinfo.victorhomedia.com/graphics/uno_card-{colourString}{valueString}.png";
+
+            if ((int)value <= 9)
+            {
+                var valueInt = (int)value;
+                Path = $"http://unocardinfo.victorhomedia.com/graphics/uno_card-{colourString}{valueInt}.png";
+            }
+            else
+            {
+                var valueString = ActiveValue.ToString().ToLower();
+                Path = $"http://unocardinfo.victorhomedia.com/graphics/uno_card-{colourString}{valueString}.png";
+            }
+
         }
 
         public static void PlayCard(Deck deck, Card[] playerHand, Value value, Colour colour, Colour newColour)
