@@ -1,8 +1,6 @@
-using Moq;
-using MyApp.Domain.Factories;
+using MyApp.Domain.Enums;
 using Xunit;
 using static MyApp.Domain.Card;
-using static MyApp.Domain.CardSuperClass;
 
 namespace MyApp.Domain.Tests;
 

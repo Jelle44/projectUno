@@ -1,3 +1,4 @@
+using MyApp.Domain.Enums;
 using MyApp.Domain.Exceptions;
 using MyApp.Domain.Factories;
 using static MyApp.Domain.CardSuperClass;
@@ -173,7 +174,7 @@ public class Deck
         return rnd.Next(0, (cards.Length));
     }
 
-    public string? UpdateGameState(string name, CardSuperClass.Value value, CardSuperClass.Colour colour, CardSuperClass.Colour newColour)
+    public string? UpdateGameState(string name, Value value, Colour colour, Colour newColour)
     {
         CheckForgottenUno(Pile.Owner!.Name);
         Card[] playerHand = GetPlayerHand(name);

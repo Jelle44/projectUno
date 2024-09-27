@@ -1,11 +1,5 @@
-﻿using MyApp.Domain.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
+﻿using MyApp.Domain.Enums;
+using MyApp.Domain.Exceptions;
 
 namespace MyApp.Domain;
 public class Pile : CardSuperClass

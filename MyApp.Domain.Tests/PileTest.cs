@@ -1,7 +1,7 @@
-﻿using MyApp.Domain.Exceptions;
+﻿using MyApp.Domain.Enums;
+using MyApp.Domain.Exceptions;
 using Xunit;
 using static MyApp.Domain.Card;
-using static MyApp.Domain.CardSuperClass;
 
 namespace MyApp.Domain.Tests;
 public class PileTest

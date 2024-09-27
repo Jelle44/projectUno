@@ -1,4 +1,6 @@
-﻿namespace MyApp.Domain
+﻿using MyApp.Domain.Enums;
+
+namespace MyApp.Domain
 {
     public class Card : CardSuperClass
     {

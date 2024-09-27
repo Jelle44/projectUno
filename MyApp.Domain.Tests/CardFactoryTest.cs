@@ -3,7 +3,7 @@ using Xunit;
 
 namespace MyApp.Domain.Tests
 {
-    internal class CardFactoryTest
+    public class CardFactoryTest
     {
         [Fact]
         public void InitialiseCardShouldReturnCard()

@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
+using MyApp.Domain.Enums;
 using Xunit;
 using static MyApp.Domain.Card;
-using static MyApp.Domain.CardSuperClass;
 
 namespace MyApp.Domain.Tests;
 public class CardTest
