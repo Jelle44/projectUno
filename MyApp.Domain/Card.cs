@@ -1,30 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
-using static MyApp.Domain.Pile;
-using static MyApp.Domain.Deck;
-
-namespace MyApp.Domain
+﻿namespace MyApp.Domain
 {
     public class Card : CardSuperClass
     {
         public bool IsPlayed { get; set; }
-        public Pile Pile { get; private set; }
+        public Pile Pile { get; }
+
         public Card(Pile pile)
+            : this(pile, Colour.BLUE, Value.ZERO)
         {
-            this.Owner = null;
-            this.Pile = pile;
-            this.ActiveColour = Colour.BLUE;
-            this.ActiveValue = Value.ZERO;
-            this.IsPlayed = false;
-            this.Path = "";
         }
 
-        public static void PlayCard(Deck deck, Card[] playerHand, CardSuperClass.Value value, CardSuperClass.Colour colour, CardSuperClass.Colour newColour)
+        public Card(Pile pile, Colour colour, Value value)
+        {
+            Owner = null;
+            Pile = pile;
+            ActiveColour = colour;
+            ActiveValue = value;
+            IsPlayed = false;
+
+            var colourString = ActiveColour.ToString().ToLower();
+            var valueString = ActiveValue.ToString().ToLower();
+            
+            Path = $"http://unocardinfo.victorhomedia.com/graphics/uno_card-{colourString}{valueString}.png";
+        }
+
+        public static void PlayCard(Deck deck, Card[] playerHand, Value value, Colour colour, Colour newColour)
         {
             Card selectedCard = GetSelectedCard(playerHand, value, colour);
             selectedCard.Pile.AddToPile(deck, selectedCard);
@@ -36,7 +36,7 @@ namespace MyApp.Domain
             this.IsPlayed = true;
         }
 
-        internal static Card GetSelectedCard(Card[] playerHand, CardSuperClass.Value value, CardSuperClass.Colour colour)
+        internal static Card GetSelectedCard(Card[] playerHand, Value value, Colour colour)
         {
             Card[] playedCards = playerHand.Where(card =>
                                                     card.ActiveColour == colour &&

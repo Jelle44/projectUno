@@ -1,5 +1,7 @@
-﻿using static MyApp.Domain.CardSuperClass;
+﻿using System.Runtime.CompilerServices;
+using static MyApp.Domain.CardSuperClass;
 
+[assembly: InternalsVisibleTo("MyApp.Domain.Tests")]
 namespace MyApp.Domain.Factories
 {
     internal class CardFactory : ICardFactory
