@@ -1,0 +1,78 @@
+name: projectUno_$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+- master
+
+pool:
+  name: default
+
+stages:
+  - stage: Build_FrontEnd
+    jobs:
+    - job: Build
+      steps:
+        - task: NodeTool@0
+          inputs:
+            versionSource: 'fromFile'
+            versionFilePath: 'vueapp/.nvmrc'
+
+        - task: Npm@1
+          name: 'ci'
+          inputs:
+            command: 'ci'
+            workingDir: 'vueapp'
+        
+        #- task: Npm@1
+        #  name: 'publish'
+        #  inputs:
+        #    command: 'publish'
+        #    workingDir: 'vueapp'
+        #    publishRegistry: useExternalRegistry
+        #    publishEndpoint: 'PipelinePractice'
+
+  - stage: Build_BackEnd
+    dependsOn: []
+    jobs:
+    - job: Build
+      steps:
+        - task: UseDotNet@2
+          displayName: 'Install .NET 8'
+          inputs:
+            version: 8.x
+            performMultiLevelLookup: true
+
+        - task: DotNetCoreCLI@2
+          displayName: 'Restore Nuget Packages'
+          inputs:
+            command: 'restore'
+            feedsToUse: 'select'
+            vstsFeed: 'jcote0591'
+            includeNuGetOrg: true
+            projects: '**/*.sln'
+
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: 'build'
+            projects: '**/*.sln'
+
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: 'test'
+            projects: '**/*.Tests.csproj'
+            testRunTitle: 'Running tests'
+            arguments: '/p:CollectCoverage=true --no-build /p:CoverletOutputFormat=cobertura /p:ExcludeByFile="**/*Migrations/*.cs'
+
+        - task: PublishCodeCoverageResults@1
+          displayName: 'Publish code coverage'
+          inputs:
+            codeCoverageTool: Cobertura
+            summaryFileLocation: '**/*coverage.cobertura.xml'
+
+        - task: BuildQualityChecks@9
+          displayName: 'Check Code Coverage'
+          inputs:
+            checkCoverage: true
+            coverageFailOption: fixed
+            coverageType: branches
+            coverageThreshold: 90
+            
