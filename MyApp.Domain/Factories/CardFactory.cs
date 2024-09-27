@@ -7,7 +7,7 @@ namespace MyApp.Domain.Factories
     internal class CardFactory : ICardFactory
     {
         public Card[] InitialiseAllCards(Pile pile)
-        { //every card is in the list twice, DRAW_FOUR & RECOLOUR each have 4 copies, every colour has only ONE 0.
+        { //every card is in the list twice, DRAW4 & CHANGE each have 4 copies, every colour has only ONE 0.
             Card[] allCards =
                     {
                 new (pile, Colour.RED, Value.ZERO),

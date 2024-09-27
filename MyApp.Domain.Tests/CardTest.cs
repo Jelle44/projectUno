@@ -9,60 +9,96 @@ public class CardTest
     [Fact]
     public void TestCardExists()
     {
+        //Arrange
         string[] players = { "Timmy" };
         Pile pile = new(players);
-        Card card = new(pile);
-        Assert.NotNull(card);
+
+        //Act
+        Card actual = new(pile);
+
+        //Assert
+        Assert.NotNull(actual);
     }
 
     [Fact]
     public void TestCardHasOwner()
     {
-        string[] players = { "Timmy" };
+        //Arrange
+        const string expectedName = "Timmy";
+        string[] players = { expectedName };
         Pile pile = new(players);
-        Card card = new(pile);
-        card.Owner = pile.Owner;
-        Assert.Equal("Timmy", card.Owner!.Name);
+
+        //Act
+        Card actual = new(pile)
+        {
+            Owner = pile.Owner
+        };
+
+        //Assert
+        Assert.Equal(expectedName, actual.Owner!.Name);
     }
 
     [Fact]
     public void TestCardHasActiveColour()
     {
+        //Arrange
+        const Colour expectedColour = Colour.BLUE;
         string[] players = { "Timmy" };
         Pile pile = new(players);
+
+        //Act
         Card card = new(pile);
-        Assert.Equal(Colour.BLUE, card.ActiveColour);
+
+        //Assert
+        Assert.Equal(expectedColour, card.ActiveColour);
     }
 
     [Fact]
     public void TestCardHasActiveValue()
     {
+        //Arrange
+        const Value expectedValue = Value.ZERO;
         string[] players = { "Timmy" };
         Pile pile = new(players);
+
+        //Act
         Card card = new(pile);
-        Assert.Equal(Value.ZERO, card.ActiveValue);
+
+        //Assert
+        Assert.Equal(expectedValue, card.ActiveValue);
     }
 
     [Fact]
     public void TestCardHasBoolIsPlayed()
     {
+        //Arrange
         string[] players = { "Timmy" };
         Pile pile = new(players);
+
+        //Act
         Card card = new(pile);
+
+        //Assert
         Assert.False(card.IsPlayed);
     }
 
     [Fact]
     public void TestPlayCardUpdatesPile()
     {
-        string[] players = { "Timmy", "Jimmy" };
+        //Arrange
+        const string playerOneName = "Timmy";
+        const string playerTwoName = "Jimmy";
+        string[] players = { playerOneName, playerTwoName };
         Deck game = new (players, "Test constructor");
-        Card card = game.DrawCard("Timmy");
-        game.DrawCard("Jimmy");
+        Card card = game.DrawCard(playerOneName);
+        game.DrawCard(playerTwoName);
 
         Card[] playerHand = { card };
+
+        //Act
         PlayCard(game, playerHand, card.ActiveValue, card.ActiveColour, card.ActiveColour);
 
+        //Assert
         Assert.Equal(card.Owner, game.Pile.Owner);
         Assert.Equal(card.ActiveValue, card.Pile.ActiveValue);
         Assert.Equal(card.ActiveColour, card.Pile.ActiveColour);
@@ -71,22 +107,28 @@ public class CardTest
     [Fact]
     public void TestPlayCardChecksForUno()
     {
-        string[] players = { "Timmy", "Jimmy" };
+        //Arrange
+        const string playerOneName = "Timmy";
+        const string playerTwoName = "Jimmy";
+        string[] players = { playerOneName, playerTwoName };
         Deck game = new (players, "testConstructor");
 
-        Card cardTimmy = game.DrawCard("Timmy");
-        game.DrawCard("Jimmy");
-        game.DrawCard("Timmy");
+        Card cardTimmy = game.DrawCard(playerOneName);
+        game.DrawCard(playerTwoName);
+        game.DrawCard(playerOneName);
 
-        game.Pile.Owner = game.Pile.Owner!.GetPlayerByName("Jimmy");
-        game.UpdateGameState("Timmy", cardTimmy.ActiveValue, cardTimmy.ActiveColour, cardTimmy.ActiveColour);
+        game.Pile.Owner = game.Pile.Owner!.GetPlayerByName(playerTwoName);
 
-        Card[] handJimmy = game.Cards.Where(unoCard =>
-                                            unoCard.Owner?.Name == "Jimmy" &&
+        //Act
+        game.UpdateGameState(playerOneName, cardTimmy.ActiveValue, cardTimmy.ActiveColour, cardTimmy.ActiveColour);
+
+        //Assert
+        Card[] actual = game.Cards.Where(unoCard =>
+                                            unoCard.Owner?.Name == playerTwoName &&
                                             !unoCard.IsPlayed)
                                      .ToArray();
 
-        Assert.Equal(3, handJimmy.Length);
+        Assert.Equal(3, actual.Length);
     }
 
     [Fact]
@@ -112,7 +154,7 @@ public class CardTest
     [InlineData("http://unocardinfo.victorhomedia.com/graphics/uno_card-wilddraw4.png", Colour.WILD, Value.DRAW4)]
     public void WhenChangeValueCardIsPassedCardConstructorShouldSetPathWithCorrectValue(string expected, Colour colour, Value value)
     {
-        //Act draw4 draw2
+        //Act
         Card card = new(null, colour, value);
 
         //Assert
