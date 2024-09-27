@@ -6,17 +6,23 @@ namespace MyApp.Domain;
 
 public class Deck
 {
-    public int Counter { get ; set; }
+    public int Counter { get; set; }
 
     public Pile Pile { get; }
     public Card[] Cards { get; }
+
+    public Deck(string[] players)
+        : this(players, new CardFactory())
+    {
+    }
+
     public Deck(string[] players, ICardFactory cardFactory)
     {
         this.Counter = 108;
         this.Pile = new Pile(players);
         this.Cards = cardFactory.InitialiseAllCards(this.Pile);
 
-        foreach (string player in players)
+        foreach (var player in players)
         {
             DrawMultipleCards(player, 7);
         }
@@ -61,7 +67,7 @@ public class Deck
 
     private void CheckNumCardsInHand(string playerName)
     {
-        if(PlayerHasUno(playerName))
+        if (PlayerHasUno(playerName))
         {
             Pile.Owner!.GetPlayerByName(playerName).UpdateUno();
         }
@@ -109,7 +115,7 @@ public class Deck
 
         Player playerOfLastCard = Pile.Owner;
 
-        if(Pile.ActiveValue == Value.SKIPTURN)
+        if (Pile.ActiveValue == Value.SKIPTURN)
         {
             playerOfLastCard = Pile.GetOwnerOfSkipTurn();
         }
@@ -200,7 +206,7 @@ public class Deck
     {
         var owner = this.Pile.Owner;
 
-        if(Pile.ActiveValue == Value.SKIPTURN)
+        if (Pile.ActiveValue == Value.SKIPTURN)
         {
             owner = Pile.GetOwnerOfSkipTurn();
         }
@@ -222,7 +228,7 @@ public class Deck
 
     private static Card[] InitialiseTestCards(Pile pile)
     {
-        Card[] testCards = new Card[]
+        Card[] testCards =
                 {
                 new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.ZERO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red0.png" },
                 new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red1.png" },

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Domain;
-using System.Text.Json;
 using webapi.Models;
 
 namespace webapi.Controllers;

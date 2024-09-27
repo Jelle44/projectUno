@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static MyApp.Domain.CardSuperClass;
-using static MyApp.Domain.Card;
-using Xunit;
+﻿using Moq;
 using MyApp.Domain.Exceptions;
+using MyApp.Domain.Factories;
+using Xunit;
+using static MyApp.Domain.Card;
+using static MyApp.Domain.CardSuperClass;
 
 namespace MyApp.Domain.Tests;
 public class PileTest
@@ -14,48 +11,75 @@ public class PileTest
     [Fact]
     public void TestPileExists()
     {
+        //Arrange
         string[] players = { "Timmy" };
+
+        //Act
         Pile pile = new(players);
+
+        //Assert
         Assert.NotNull(pile);
     }
 
     [Fact]
     public void TestPileHasOwner()
     {
+        //Arrange
         string[] players = { "Timmy" };
+
+        //Act
         Pile pile = new(players);
+
+        //Assert
         Assert.NotNull( pile.Owner);
     }
 
     [Fact]
     public void TestPileHasActiveColour()
     {
+        //Arrange
         string[] players = { "Timmy" };
+
+        //Act
         Pile pile = new(players);
+
+        //Assert
         Assert.Equal(Colour.ALL, pile.ActiveColour);
     }
 
     [Fact]
     public void TestPileHasActiveValue()
     {
+        //Arrange
         string[] players = { "Timmy" };
+
+        //Act
         Pile pile = new(players);
+
+        //Assert
         Assert.Equal(Value.FOUR, pile.ActiveValue);
     }
 
     [Fact]
     public void TestPileHasTurnOrder()
     {
+        //Arrange
         string[] players = { "Timmy" };
+
+        //Act
         Pile pile = new(players);
+
+        //Assert
         Assert.False(pile.TurnOrderIsReversed);
     }
 
     [Fact]
     public void TestPileAllowsSameColour()
     {
+        //Arrange
         string[] players = { "Timmy" };
-        Deck deck = new(players);
+        var cardFactory = new Mock<ICardFactory>();
+        Deck deck = new(players, cardFactory.Object);
         Pile pile = new(players)
         { 
             ActiveColour = Colour.BLUE,
@@ -69,8 +93,10 @@ public class PileTest
 
         Card[] playerHand = { card };
 
+        //Act
         PlayCard(deck, playerHand,card.ActiveValue, card.ActiveColour, card.ActiveColour);
 
+        //Assert
         Assert.Equal(card.ActiveColour, card.Pile.ActiveColour);
         Assert.Equal(card.ActiveValue, card.Pile.ActiveValue);
     }
@@ -78,8 +104,10 @@ public class PileTest
     [Fact]
     public void TestPileAllowsSameValueDifferentColour()
     {
+        //Arrange
         string[] players = { "Timmy" };
-        Deck deck = new(players);
+        var cardFactory = new Mock<ICardFactory>();
+        Deck deck = new(players, cardFactory.Object);
         Pile pile = new(players)
         {
             ActiveColour = Colour.BLUE,
@@ -94,8 +122,10 @@ public class PileTest
 
         Card[] playerHand = { card };
 
+        //Act
         PlayCard(deck, playerHand, card.ActiveValue, card.ActiveColour, card.ActiveColour);
 
+        //Assert
         Assert.Equal(card.ActiveValue, card.Pile.ActiveValue);
         Assert.Equal(card.ActiveColour, card.Pile.ActiveColour);
     }
@@ -103,8 +133,10 @@ public class PileTest
     [Fact]
     public void TestPileDoesNotAllowDifferentColour()
     {
+        //Arrange
         string[] players = { "Timmy", "Jimmy" };
-        Deck deck = new(players);
+        var cardFactory = new Mock<ICardFactory>();
+        Deck deck = new(players, cardFactory.Object);
         Pile pile = new(players);
         Card card = new(pile)
         {
@@ -119,14 +151,17 @@ public class PileTest
 
         Card[] playerHand = { card };
 
+        //Act / Assert
         Assert.Throws<InvalidCardException>(() => PlayCard(deck, playerHand, card.ActiveValue, card.ActiveColour, card.ActiveColour));
     }
 
     [Fact]
     public void TestReverseTurnReversesTurn()
     {
+        //Arrange
         string[] players = { "Timmy", "Jimmy", "Barney" };
-        Deck deck = new(players);
+        var cardFactory = new Mock<ICardFactory>();
+        Deck deck = new(players, cardFactory.Object);
         Pile pile = new(players);
         Card cardJimmy = new(pile)
         {
@@ -147,16 +182,21 @@ public class PileTest
         Assert.Equal("Timmy", pile.Owner.NextPlayer.Name);
 
         Card[] playerTwoHand = { cardBarney };
+
+        //Act
         PlayCard(deck, playerTwoHand, cardBarney.ActiveValue, cardBarney.ActiveColour, cardBarney.ActiveColour);
 
+        //Assert
         Assert.Equal("Barney", pile.Owner.Name);
     }
 
     [Fact]
     public void TestSkipTurnSkipsTurn()
     {
+        //Arrange
         string[] players = { "Timmy", "Jimmy", "Barney" };
-        Deck deck = new(players);
+        var cardFactory = new Mock<ICardFactory>();
+        Deck deck = new(players, cardFactory.Object);
         Pile pile = new(players);
         Card cardJimmy = new(pile)
         {
@@ -174,14 +214,18 @@ public class PileTest
         PlayCard(deck, playerOneHand, cardJimmy.ActiveValue, cardJimmy.ActiveColour, cardJimmy.ActiveColour);
         
         Card[] playerTwoHand = { cardBarney };
+
+        //Act
         PlayCard(deck, playerTwoHand, cardBarney.ActiveValue, cardBarney.ActiveColour, cardBarney.ActiveColour);
 
+        //Assert
         Assert.Equal("Barney", pile.Owner.Name);
     }
 
     [Fact]
     public void TestRecolourChangesColour()
     {
+        //Arrange
         string[] players = { "Timmy" };
         Pile pile = new(players);
         Card cardTimmy = new(pile)
@@ -192,28 +236,36 @@ public class PileTest
         };
 
         Card[] playerTwoHand = { cardTimmy };
-        Deck deck = new(players);
+        var cardFactory = new Mock<ICardFactory>();
+        Deck deck = new(players, cardFactory.Object);
 
         PlayCard(deck, playerTwoHand, cardTimmy.ActiveValue, cardTimmy.ActiveColour, cardTimmy.ActiveColour);
+
+        //Act
         pile.ChangeColour(Colour.RED);
 
+        //Assert
         Assert.Equal(Colour.RED, pile.ActiveColour);
     }
 
     [Fact]
     public void TestPlayerCannotDrawTwoCardsInOneTurn()
     {
+        //Arrange
         string[] players = { "Timmy", "Jimmy" };
-        Deck game = new (players);
+        var cardFactory = new Mock<ICardFactory>();
+        Deck game = new (players, cardFactory.Object);
 
         game.DrawCard("Timmy");
 
+        //Act / Assert
         Assert.Throws<NotYourTurnException>(() => game.DrawCard("Timmy"));
     }
 
     [Fact]
     public void TestDrawTwoDrawsTwo()
     {
+        //Arrange
         string[] players = { "Timmy" };
         Deck game = new (players, "test");
         game.DrawCard("Timmy");
@@ -224,8 +276,10 @@ public class PileTest
 
         game.Pile.ActiveColour = Colour.BLUE;
 
+        //Act
         game.UpdateGameState("Timmy", cardTimmy.ActiveValue, cardTimmy.ActiveColour, Colour.BLUE);
 
+        //Assert
         Card[] handTimmy = game.Cards.Where(card =>
                                         card.Owner?.Name == "Timmy" &&
                                         !card.IsPlayed)
@@ -237,6 +291,7 @@ public class PileTest
     [Fact]
     public void TestDrawFourDrawsFour()
     {
+        //Arrange
         string[] players = { "Timmy" };
         Deck game = new(players, "test");
         game.DrawCard("Timmy");
@@ -247,8 +302,10 @@ public class PileTest
 
         game.Pile.ActiveColour = Colour.BLUE;
 
+        //Act
         game.UpdateGameState("Timmy", cardTimmy.ActiveValue, cardTimmy.ActiveColour, Colour.BLUE);
 
+        //Assert
         Card[] handTimmy = game.Cards.Where(card =>
                                         card.Owner?.Name == "Timmy" &&
                                         !card.IsPlayed)
