@@ -33,7 +33,7 @@ namespace MyApp.Domain.Tests
             cardFactory.CreateMultipleCards(expectedCount, pile, Colour.RED, Value.DRAW2);
 
             //Assert
-            cardFactory.AllCards.Length.Should().Be(expectedCount);
+            cardFactory.GetAllCards().Length.Should().Be(expectedCount);
         }
     }
 }

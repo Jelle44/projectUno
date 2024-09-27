@@ -10,17 +10,14 @@ namespace MyApp.Domain.Factories
         private readonly Pile _pile;
 
         private readonly List<Card> _allCards = new();
-        public Card[] AllCards
+        public Card[] GetAllCards()
         {
-            get
+            if (_allCards.Count == 0)
             {
-                if (_allCards.Count == 0)
-                {
-                    InitialiseAllCards(_pile);
-                }
-
-                return _allCards.ToArray();
+                InitialiseAllCards(_pile);
             }
+
+            return _allCards.ToArray();
         }
 
         public CardFactory(Pile pile)
