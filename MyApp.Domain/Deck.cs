@@ -1,7 +1,6 @@
 using MyApp.Domain.Enums;
 using MyApp.Domain.Exceptions;
 using MyApp.Domain.Factories;
-using static MyApp.Domain.CardSuperClass;
 
 namespace MyApp.Domain;
 
@@ -21,7 +20,7 @@ public class Deck
     {
         this.Counter = 108;
         this.Pile = new Pile(players);
-        this.Cards = cardFactory.InitialiseAllCards(this.Pile);
+        this.Cards = cardFactory.InitialiseAllCards();
 
         foreach (var player in players)
         {
@@ -227,29 +226,29 @@ public class Deck
                          .ToArray();
     }
 
-    private static Card[] InitialiseTestCards(Pile pile)
+    internal static Card[] InitialiseTestCards(Pile pile)
     {
         Card[] testCards =
                 {
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.ZERO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red0.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red1.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red1.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red2.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red2.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red3.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red3.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red4.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red4.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red5.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red5.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red6.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red6.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red7.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red7.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red8.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red8.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red9.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red9.png" },
+                new (pile, Colour.RED, Value.ZERO),
+                new (pile, Colour.RED, Value.ONE),
+                new (pile, Colour.RED, Value.ONE),
+                new (pile, Colour.RED, Value.TWO),
+                new (pile, Colour.RED, Value.TWO),
+                new (pile, Colour.RED, Value.THREE),
+                new (pile, Colour.RED, Value.THREE),
+                new (pile, Colour.RED, Value.FOUR),
+                new (pile, Colour.RED, Value.FOUR),
+                new (pile, Colour.RED, Value.FIVE),
+                new (pile, Colour.RED, Value.FIVE),
+                new (pile, Colour.RED, Value.SIX),
+                new (pile, Colour.RED, Value.SIX),
+                new (pile, Colour.RED, Value.SEVEN),
+                new (pile, Colour.RED, Value.SEVEN),
+                new (pile, Colour.RED, Value.EIGHT),
+                new (pile, Colour.RED, Value.EIGHT),
+                new (pile, Colour.RED, Value.NINE),
+                new (pile, Colour.RED, Value.NINE),
                 };
         return testCards;
     }

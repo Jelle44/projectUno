@@ -2,6 +2,6 @@
 {
     public interface ICardFactory
     {
-        Card[] InitialiseAllCards(Pile pile);
+        Card[] InitialiseAllCards();
     }
 }

@@ -16,7 +16,7 @@ namespace MyApp.Domain.Factories
             {
                 if (_allCards.Count == 0)
                 {
-                    InitialiseAllCards(_pile);
+                    InitialiseAllCards();
                 }
 
                 return _allCards.ToArray();
@@ -28,14 +28,14 @@ namespace MyApp.Domain.Factories
             _pile = pile;
         }
 
-        public Card[] InitialiseAllCards(Pile pile)
+        public Card[] InitialiseAllCards()
         {
             //every card is in the list twice, DRAW4 & CHANGE each have 4 copies, every colour has only ONE 0.
-            CreateCardOfEachValueForColour(pile, Colour.BLUE);
-            CreateCardOfEachValueForColour(pile, Colour.GREEN);
-            CreateCardOfEachValueForColour(pile, Colour.RED);
-            CreateCardOfEachValueForColour(pile, Colour.YELLOW);
-            CreateColourChangeCards(pile);
+            CreateCardOfEachValueForColour(_pile, Colour.BLUE);
+            CreateCardOfEachValueForColour(_pile, Colour.GREEN);
+            CreateCardOfEachValueForColour(_pile, Colour.RED);
+            CreateCardOfEachValueForColour(_pile, Colour.YELLOW);
+            CreateColourChangeCards(_pile);
 
             return _allCards.ToArray();
         }
