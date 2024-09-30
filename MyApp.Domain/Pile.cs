@@ -1,5 +1,4 @@
-﻿using MyApp.Domain.EnumExtensionMethods;
-using MyApp.Domain.Enums;
+﻿using MyApp.Domain.Enums;
 using MyApp.Domain.Exceptions;
 
 namespace MyApp.Domain;
