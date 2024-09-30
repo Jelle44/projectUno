@@ -8,6 +8,10 @@ namespace MyApp.Domain.Factories
     internal class CardFactory : ICardFactory
     {
         private readonly Pile _pile;
+        public Pile GetPile()
+        {
+            return _pile;
+        }
 
         private readonly List<Card> _allCards = new();
         public Card[] GetAllCards()
@@ -25,7 +29,7 @@ namespace MyApp.Domain.Factories
             _pile = pile;
         }
 
-        public Card[] InitialiseAllCards()
+        public void InitialiseAllCards()
         {
             //every card is in the list twice, DRAW4 & CHANGE each have 4 copies, every colour has only ONE 0.
             CreateCardOfEachValueForColour(_pile, Colour.BLUE);
@@ -33,8 +37,6 @@ namespace MyApp.Domain.Factories
             CreateCardOfEachValueForColour(_pile, Colour.RED);
             CreateCardOfEachValueForColour(_pile, Colour.YELLOW);
             CreateColourChangeCards(_pile);
-
-            return _allCards.ToArray();
         }
 
         private void CreateColourChangeCards(Pile pile)

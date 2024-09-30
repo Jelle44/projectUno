@@ -18,16 +18,16 @@ public class Deck
 
     public Deck(string[] players, ICardFactory cardFactory)
     {
-        this.Counter = 108;
-        this.Pile = new Pile(players);
-        this.Cards = cardFactory.InitialiseAllCards();
+        Pile = cardFactory.GetPile();
+        Cards = cardFactory.GetAllCards();
+        Counter = Cards.Length;
 
         foreach (var player in players)
         {
             DrawMultipleCards(player, 7);
         }
 
-        this.Pile.SetPileTopCardForStartGame(this, players);
+        Pile.SetPileTopCardForStartGame(this, players);
     }
 
     public Deck(string[] players, string testConstructor)
@@ -46,10 +46,10 @@ public class Deck
 
     public Card DrawCard(string playerName)
     {
-        if (this.Pile.DrawIsValid(playerName))
+        if (Pile.DrawIsValid(playerName))
         {
             CheckNumCardsInHand(playerName);
-            this.Pile.Owner = this.Pile.ChangeTurn();
+            Pile.Owner = Pile.ChangeTurn();
 
             return GetCompleteCard(playerName);
         }

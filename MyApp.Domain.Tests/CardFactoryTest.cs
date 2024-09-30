@@ -8,15 +8,17 @@ namespace MyApp.Domain.Tests
     public class CardFactoryTest
     {
         [Fact]
-        public void InitialiseCardShouldReturnCard()
+        public void InitialiseCardShouldReturnDeck()
         {
             //Arrange
+            const int expectedNumberOfCards = 108;
             CardFactory cardFactory = new(null);
 
             //Act
-            //cardFactory.InitialiseAllCards()
+            var actual = cardFactory.GetAllCards();
 
             //Assert
+            actual.Length.Should().Be(expectedNumberOfCards);
         }
 
         [Fact]
