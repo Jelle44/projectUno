@@ -1,4 +1,5 @@
-﻿using MyApp.Domain.Enums;
+﻿using MyApp.Domain.EnumExtensionMethods;
+using MyApp.Domain.Enums;
 using MyApp.Domain.Exceptions;
 
 namespace MyApp.Domain;
@@ -42,7 +43,7 @@ public class Pile : CardSuperClass
         this.ActiveColour = card.ActiveColour;
         this.ActiveValue = card.ActiveValue;
 
-        if (CardIsDrawCard(card))
+        if (card.IsDrawCard())
         {
             DrawCorrectAmountOfCards(deck, card);
         }
@@ -70,12 +71,6 @@ public class Pile : CardSuperClass
         }
 
         return card.Owner!.NextPlayer.Name;
-    }
-
-    private bool CardIsDrawCard(Card card)
-    {
-        return card.ActiveValue == Value.DRAW2 ||
-               card.ActiveValue == Value.DRAW4;
     }
 
     private bool IsCardAllowed(Card card)
@@ -173,7 +168,7 @@ public class Pile : CardSuperClass
 
     internal void SetPileTopCardForStartGame(Deck deck, string[] players)
     {
-        var pileTopCard = deck.GetCompleteCard(players[players.Length - 1]);
+        var pileTopCard = deck.GetCompleteCard(players[^1]);
         this.ActiveColour = pileTopCard.ActiveColour;
         this.ActiveValue = pileTopCard.ActiveValue;
         this.Owner = pileTopCard.Owner;

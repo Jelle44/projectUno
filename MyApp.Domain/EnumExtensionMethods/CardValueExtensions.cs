@@ -8,5 +8,10 @@ internal static class CardValueExtensions
     {
         return value is Value.DRAW4 or Value.CHANGE;
     }
+
+    public static bool IsDrawCard(this Enum value)
+    {
+        return value is Value.DRAW2 or Value.DRAW4;
+    }
 }
 

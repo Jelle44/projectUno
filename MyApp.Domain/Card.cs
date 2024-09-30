@@ -1,4 +1,5 @@
-﻿using MyApp.Domain.Enums;
+﻿using MyApp.Domain.EnumExtensionMethods;
+using MyApp.Domain.Enums;
 
 namespace MyApp.Domain
 {
@@ -60,6 +61,11 @@ namespace MyApp.Domain
                                            .ToArray();
 
             return playedCards[0];
+        }
+
+        internal bool IsDrawCard()
+        {
+            return ActiveValue.IsDrawCard();
         }
     }
 }
