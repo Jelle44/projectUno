@@ -14,7 +14,7 @@ public class CardTest
         Pile pile = new(players);
 
         //Act
-        Card actual = new(pile);
+        Card actual = new(pile, Colour.RED, Value.EIGHT);
 
         //Assert
         Assert.NotNull(actual);
@@ -29,7 +29,7 @@ public class CardTest
         Pile pile = new(players);
 
         //Act
-        Card actual = new(pile)
+        Card actual = new(pile, Colour.RED, Value.EIGHT)
         {
             Owner = pile.Owner
         };
@@ -47,7 +47,7 @@ public class CardTest
         Pile pile = new(players);
 
         //Act
-        Card card = new(pile);
+        Card card = new(pile, Colour.BLUE, Value.EIGHT);
 
         //Assert
         Assert.Equal(expectedColour, card.ActiveColour);
@@ -57,12 +57,12 @@ public class CardTest
     public void TestCardHasActiveValue()
     {
         //Arrange
-        const Value expectedValue = Value.ZERO;
+        const Value expectedValue = Value.EIGHT;
         string[] players = { "Timmy" };
         Pile pile = new(players);
 
         //Act
-        Card card = new(pile);
+        Card card = new(pile, Colour.RED, Value.EIGHT);
 
         //Assert
         Assert.Equal(expectedValue, card.ActiveValue);
@@ -76,7 +76,7 @@ public class CardTest
         Pile pile = new(players);
 
         //Act
-        Card card = new(pile);
+        Card card = new(pile, Colour.RED, Value.EIGHT);
 
         //Assert
         Assert.False(card.IsPlayed);

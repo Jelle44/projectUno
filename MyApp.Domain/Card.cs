@@ -8,11 +8,6 @@ namespace MyApp.Domain
         public bool IsPlayed { get; set; }
         public Pile Pile { get; }
 
-        public Card(Pile pile)
-            : this(pile, Colour.BLUE, Value.ZERO)
-        {
-        }
-
         public Card(Pile pile, Colour colour, Value value)
         {
             Owner = null;
