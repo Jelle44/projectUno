@@ -8,7 +8,7 @@ namespace MyApp.Domain
         public bool IsPlayed { get; set; }
         public Pile Pile { get; }
 
-        public Card(Pile pile, Colour colour, Value value)
+        internal Card(Pile pile, Colour colour, Value value)
         {
             Owner = null;
             Pile = pile;

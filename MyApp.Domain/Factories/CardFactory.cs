@@ -39,23 +39,6 @@ namespace MyApp.Domain.Factories
             CreateColourChangeCards(_pile);
         }
 
-        private void CreateColourChangeCards(Pile pile)
-        {
-            CreateMultipleCards(4, pile, Colour.WILD, Value.CHANGE);
-            CreateMultipleCards(4, pile, Colour.WILD, Value.DRAW4);
-        }
-
-        internal void CreateMultipleCards(int numberToCreate, Pile pile, Colour colour, Value value)
-        {
-            if (numberToCreate < 1)
-            {
-                return;
-            }
-
-            _allCards.Add(new Card(pile, colour, value));
-            CreateMultipleCards(numberToCreate - 1, pile, colour, value);
-        }
-
         private void CreateCardOfEachValueForColour(Pile pile, Colour colour)
         {
             if (colour == Colour.WILD)
@@ -75,6 +58,23 @@ namespace MyApp.Domain.Factories
                 var numberToCreate = value == Value.ZERO ? 1 : 2;
                 CreateMultipleCards(numberToCreate, pile, colour, value);
             }
+        }
+
+        private void CreateColourChangeCards(Pile pile)
+        {
+            CreateMultipleCards(4, pile, Colour.WILD, Value.CHANGE);
+            CreateMultipleCards(4, pile, Colour.WILD, Value.DRAW4);
+        }
+
+        internal void CreateMultipleCards(int numberToCreate, Pile pile, Colour colour, Value value)
+        {
+            if (numberToCreate < 1)
+            {
+                return;
+            }
+
+            _allCards.Add(new Card(pile, colour, value));
+            CreateMultipleCards(numberToCreate - 1, pile, colour, value);
         }
     }
 }

@@ -161,10 +161,11 @@ public class Deck
 
     private Card[] GetActiveCards()
     {
-        return this.Cards.Where(card =>
-                                card.Owner == null &&
-                                !card.IsPlayed)
-                         .ToArray();
+        return Cards
+            .Where(card =>
+                card.Owner == null &&
+                !card.IsPlayed)
+            .ToArray();
     }
 
     private static int GetRandomNumber(Card[] cards)
@@ -189,7 +190,7 @@ public class Deck
 
     private string EndGame()
     {
-        foreach (Card card in this.Cards)
+        foreach (Card card in Cards)
         {
             card.IsPlayed = true;
         }
@@ -199,31 +200,33 @@ public class Deck
 
     private string Winner()
     {
-        return this.Pile.Owner!.Name;
+        return Pile.Owner!.Name;
     }
 
     public bool PlayerHasNoCardsInHand()
     {
-        var owner = this.Pile.Owner;
+        var owner = Pile.Owner;
 
         if (Pile.ActiveValue == Value.SKIP)
         {
             owner = Pile.GetOwnerOfSkipTurn();
         }
 
-        return (this.Cards.Where(card =>
-                                    card.Owner == owner &&
-                                    !card.IsPlayed)
-                          .ToArray()
-                          .Length == 0);
+        return (Cards
+            .Where(card =>
+                card.Owner == owner &&
+                !card.IsPlayed)
+            .ToArray()
+            .Length == 0);
     }
 
     public Card[] GetPlayerHand(string name)
     {
-        return this.Cards.Where(unoCard =>
-                                 unoCard.Owner?.Name == name &&
-                                 !unoCard.IsPlayed)
-                         .ToArray();
+        return Cards
+            .Where(unoCard => 
+                unoCard.Owner?.Name == name &&
+                !unoCard.IsPlayed)
+            .ToArray();
     }
 
     internal static Card[] InitialiseTestCards(Pile pile)
