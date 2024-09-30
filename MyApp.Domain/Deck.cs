@@ -1,4 +1,3 @@
-using MyApp.Domain.Enums;
 using MyApp.Domain.Exceptions;
 using MyApp.Domain.Factories;
 
@@ -11,30 +10,26 @@ public class Deck
     public Pile Pile { get; }
     public Card[] Cards { get; }
 
-    public Deck(string[] players)
-        : this(players, new CardFactory(new Pile(players)))
-    {
-    }
-
-    private Deck(string[] players, ICardFactory cardFactory)
+    internal Deck(string[] players, ICardFactory cardFactory)
     {
         Pile = cardFactory.GetPile();
         Cards = cardFactory.GetAllCards();
-        Counter = Cards.Length;
+        Counter = cardFactory.GetNumberOfCards();
 
+        if (Counter > 0)
+        {
+            StartGame(players);
+        }
+    }
+
+    private void StartGame(string[] players)
+    {
         foreach (var player in players)
         {
             DrawMultipleCards(player, 7);
         }
 
         Pile.SetPileTopCardForStartGame(this, players);
-    }
-
-    internal Deck(string[] players, string testConstructor)
-    {
-        Counter = 108;
-        Pile = new Pile(players);
-        Cards = InitialiseTestCards(Pile);
     }
 
     public static int DecreaseCounter(int number)
@@ -57,31 +52,12 @@ public class Deck
         throw new NotYourTurnException();
     }
 
-    internal void CheckForgottenUno(string playerName)
-    {
-        if (CheckUno(playerName) && !PlayerHasUno(playerName))
-        {
-            DrawTwoCards(playerName);
-        };
-    }
-
     private void CheckNumCardsInHand(string playerName)
     {
         if (PlayerHasUno(playerName))
         {
             Pile.Owner!.GetPlayerByName(playerName).UpdateUno();
         }
-    }
-
-    public void UnoButtonWasPressed(string playerName)
-    {
-        if (UnoIsValid(playerName))
-        {
-            Pile.Owner!.GetPlayerByName(playerName).UpdateUno();
-            return;
-        }
-
-        DrawTwoCards(playerName);
     }
 
     private bool PlayerHasUno(string playerName)
@@ -101,27 +77,6 @@ public class Deck
             GetCompleteCard(playerName);
             DrawMultipleCards(playerName, (numberOfCardsToDraw - 1));
         }
-    }
-
-    private bool UnoIsValid(string playerName)
-    {
-        return CheckUno(playerName);
-    }
-
-    private bool CheckUno(string playerName)
-    {
-        Card[] playerHand = GetPlayerHand(playerName);
-        Player playerWithPossibleUno = Pile.Owner!.GetPlayerByName(playerName);
-
-        Player playerOfLastCard = Pile.Owner;
-
-        if (Pile.ActiveValue == Value.SKIP)
-        {
-            playerOfLastCard = Pile.GetOwnerOfSkipTurn();
-        }
-
-        return (playerHand.Length <= 1 &&
-                playerWithPossibleUno == playerOfLastCard);
     }
 
     internal Card GetCompleteCard(string playerName)
@@ -172,112 +127,5 @@ public class Deck
     {
         Random rnd = new();
         return rnd.Next(0, (cards.Length));
-    }
-
-    public string? UpdateGameState(string name, Value value, Colour colour, Colour newColour)
-    {
-        CheckForgottenUno(Pile.Owner!.Name);
-        Card[] playerHand = GetPlayerHand(name);
-        Card.PlayCard(this, playerHand, value, colour, newColour);
-
-        if (PlayerHasNoCardsInHand())
-        {
-            return EndGame();
-        }
-
-        return null;
-    }
-
-    private string EndGame()
-    {
-        foreach (Card card in Cards)
-        {
-            card.IsPlayed = true;
-        }
-
-        return Winner();
-    }
-
-    private string Winner()
-    {
-        return Pile.Owner!.Name;
-    }
-
-    public bool PlayerHasNoCardsInHand()
-    {
-        var owner = Pile.Owner;
-
-        if (Pile.ActiveValue == Value.SKIP)
-        {
-            owner = Pile.GetOwnerOfSkipTurn();
-        }
-
-        return (Cards
-            .Where(card =>
-                card.Owner == owner &&
-                !card.IsPlayed)
-            .ToArray()
-            .Length == 0);
-    }
-
-    public Card[] GetPlayerHand(string name)
-    {
-        return Cards
-            .Where(unoCard => 
-                unoCard.Owner?.Name == name &&
-                !unoCard.IsPlayed)
-            .ToArray();
-    }
-
-    internal static Card[] InitialiseTestCards(Pile pile)
-    {
-        Card[] testCards =
-                {
-                new (pile, Colour.RED, Value.ZERO),
-                new (pile, Colour.RED, Value.ONE),
-                new (pile, Colour.RED, Value.ONE),
-                new (pile, Colour.RED, Value.TWO),
-                new (pile, Colour.RED, Value.TWO),
-                new (pile, Colour.RED, Value.THREE),
-                new (pile, Colour.RED, Value.THREE),
-                new (pile, Colour.RED, Value.FOUR),
-                new (pile, Colour.RED, Value.FOUR),
-                new (pile, Colour.RED, Value.FIVE),
-                new (pile, Colour.RED, Value.FIVE),
-                new (pile, Colour.RED, Value.SIX),
-                new (pile, Colour.RED, Value.SIX),
-                new (pile, Colour.RED, Value.SEVEN),
-                new (pile, Colour.RED, Value.SEVEN),
-                new (pile, Colour.RED, Value.EIGHT),
-                new (pile, Colour.RED, Value.EIGHT),
-                new (pile, Colour.RED, Value.NINE),
-                new (pile, Colour.RED, Value.NINE),
-                };
-        return testCards;
-    }
-
-    public string[] CreatePlayerList(string playerId)
-    {
-        List<string> playerNames = new()
-        {
-            playerId
-        };
-
-        playerNames = GetAllPlayers(playerNames, playerId);
-
-        return playerNames.ToArray();
-    }
-
-    private List<string> GetAllPlayers(List<string> playerNames, string name)
-    {
-        name = Pile.Owner!.GetPlayerByName(name).NextPlayer.Name;
-
-        if (name != playerNames[0])
-        {
-            playerNames.Add(name);
-            GetAllPlayers(playerNames, name);
-        }
-
-        return playerNames;
     }
 }

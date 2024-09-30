@@ -20,9 +20,9 @@ public class DeckDbDTO
         //added for database-purposes
     }
 
-    public DeckDbDTO(Deck uno, string playerId)
+    public DeckDbDTO(Game uno, string playerId)
     {
-        Counter = uno.Counter;
+        Counter = uno.Deck.Counter;
 
         string[] players = uno.CreatePlayerList(playerId);
         PlayerList = new List<PlayerDbDTO>();
@@ -33,12 +33,12 @@ public class DeckDbDTO
         }
 
         List<CardDbDTO> cardList = new();
-        foreach(var card in uno.Cards)
+        foreach(var card in uno.Deck.Cards)
         {
             CardDbDTO cardDTO = new(card);
             cardList.Add(cardDTO);
         }
 
-        PileTopCard = new CardDbDTO(uno.Pile);
+        PileTopCard = new CardDbDTO(uno.Deck.Pile);
     }
 }

@@ -1,5 +1,7 @@
-﻿using MyApp.Domain.Enums;
+﻿using Moq;
+using MyApp.Domain.Enums;
 using MyApp.Domain.Exceptions;
+using MyApp.Domain.Factories;
 using Xunit;
 using static MyApp.Domain.Card;
 
@@ -77,7 +79,7 @@ public class PileTest
     {
         //Arrange
         string[] players = { "Timmy" };
-        Deck deck = new(players);
+        Game game = new(players);
         Pile pile = new(players)
         { 
             ActiveColour = Colour.BLUE,
@@ -90,7 +92,7 @@ public class PileTest
         Card[] playerHand = { card };
 
         //Act
-        PlayCard(deck, playerHand,card.ActiveValue, card.ActiveColour, card.ActiveColour);
+        PlayCard(game.Deck, playerHand,card.ActiveValue, card.ActiveColour, card.ActiveColour);
 
         //Assert
         Assert.Equal(card.ActiveColour, card.Pile.ActiveColour);
@@ -102,7 +104,7 @@ public class PileTest
     {
         //Arrange
         string[] players = { "Timmy" };
-        Deck deck = new(players);
+        Game game = new(players);
         Pile pile = new(players)
         {
             ActiveColour = Colour.BLUE,
@@ -116,7 +118,7 @@ public class PileTest
         Card[] playerHand = { card };
 
         //Act
-        PlayCard(deck, playerHand, card.ActiveValue, card.ActiveColour, card.ActiveColour);
+        PlayCard(game.Deck, playerHand, card.ActiveValue, card.ActiveColour, card.ActiveColour);
 
         //Assert
         Assert.Equal(card.ActiveValue, card.Pile.ActiveValue);
@@ -130,7 +132,7 @@ public class PileTest
         const string playerOneName = "Timmy";
         const string playerTwoName = "Jimmy";
         string[] players = { playerOneName, playerTwoName };
-        Deck deck = new(players);
+        Game game = new(players);
         Pile pile = new(players);
         Card card = new(pile, Colour.BLUE, Value.ZERO)
         {
@@ -144,7 +146,7 @@ public class PileTest
         Card[] playerHand = { card };
 
         //Act / Assert
-        Assert.Throws<InvalidCardException>(() => PlayCard(deck, playerHand, card.ActiveValue, card.ActiveColour, card.ActiveColour));
+        Assert.Throws<InvalidCardException>(() => PlayCard(game.Deck, playerHand, card.ActiveValue, card.ActiveColour, card.ActiveColour));
     }
 
     [Fact]
@@ -155,7 +157,7 @@ public class PileTest
         const string playerTwoName = "Jimmy";
         const string playerThreeName = "Barney";
         string[] players = { playerOneName, playerTwoName, playerThreeName };
-        Deck deck = new(players);
+        Game game = new(players);
         Pile pile = new(players);
         Card playerTwoCard = new(pile, Colour.RED, Value.REVERSE)
         {
@@ -167,7 +169,7 @@ public class PileTest
         };
 
         Card[] playerOneHand = { playerTwoCard };
-        PlayCard(deck, playerOneHand, playerTwoCard.ActiveValue, playerTwoCard.ActiveColour, playerTwoCard.ActiveColour);
+        PlayCard(game.Deck, playerOneHand, playerTwoCard.ActiveValue, playerTwoCard.ActiveColour, playerTwoCard.ActiveColour);
 
         Assert.Equal(playerTwoName, pile.Owner.Name);
         Assert.Equal(playerOneName, pile.Owner.NextPlayer.Name);
@@ -175,7 +177,7 @@ public class PileTest
         Card[] playerTwoHand = { playerThreeCard };
 
         //Act
-        PlayCard(deck, playerTwoHand, playerThreeCard.ActiveValue, playerThreeCard.ActiveColour, playerThreeCard.ActiveColour);
+        PlayCard(game.Deck, playerTwoHand, playerThreeCard.ActiveValue, playerThreeCard.ActiveColour, playerThreeCard.ActiveColour);
 
         //Assert
         Assert.Equal(playerThreeName, pile.Owner.Name);
@@ -189,7 +191,7 @@ public class PileTest
         const string playerTwoName = "Jimmy";
         const string playerThreeName = "Barney";
         string[] players = { playerOneName, playerTwoName, playerThreeName };
-        Deck deck = new(players);
+        Game game = new(players);
         Pile pile = new(players);
         Card playerTwoCard = new(pile, Colour.RED, Value.SKIP)
         {
@@ -201,12 +203,12 @@ public class PileTest
         };
 
         Card[] playerOneHand = { playerTwoCard };
-        PlayCard(deck, playerOneHand, playerTwoCard.ActiveValue, playerTwoCard.ActiveColour, playerTwoCard.ActiveColour);
+        PlayCard(game.Deck, playerOneHand, playerTwoCard.ActiveValue, playerTwoCard.ActiveColour, playerTwoCard.ActiveColour);
         
         Card[] playerTwoHand = { playerThreeCard };
 
         //Act
-        PlayCard(deck, playerTwoHand, playerThreeCard.ActiveValue, playerThreeCard.ActiveColour, playerThreeCard.ActiveColour);
+        PlayCard(game.Deck, playerTwoHand, playerThreeCard.ActiveValue, playerThreeCard.ActiveColour, playerThreeCard.ActiveColour);
 
         //Assert
         Assert.Equal(playerThreeName, pile.Owner.Name);
@@ -234,12 +236,12 @@ public class PileTest
         const string playerOneName = "Timmy";
         const string playerTwoName = "Jimmy";
         string[] players = { playerOneName, playerTwoName };
-        Deck game = new (players);
+        Game game = new (players);
 
-        game.DrawCard(playerOneName);
+        game.Deck.DrawCard(playerOneName);
 
         //Act / Assert
-        Assert.Throws<NotYourTurnException>(() => game.DrawCard(playerOneName));
+        Assert.Throws<NotYourTurnException>(() => game.Deck.DrawCard(playerOneName));
     }
 
     [Fact]
@@ -248,20 +250,37 @@ public class PileTest
         //Arrange
         const string playerOneName = "Timmy";
         string[] players = { playerOneName };
-        Deck game = new (players, "test");
-        game.DrawCard(playerOneName);
-        Card playerOneCard = game.DrawCard(playerOneName);
+
+        var pile = new Pile(players);
+
+        var cardFactory = new Mock<ICardFactory>(MockBehavior.Strict);
+
+        cardFactory
+            .Setup(m => m.GetAllCards())
+            .Returns(InitialiseTestCards(pile));
+
+        cardFactory
+            .Setup(m => m.GetPile())
+            .Returns(pile);
+
+        cardFactory
+            .Setup(m => m.GetNumberOfCards())
+            .Returns(0);
+
+        Game game = new (players, cardFactory.Object);
+        game.Deck.DrawCard(playerOneName);
+        Card playerOneCard = game.Deck.DrawCard(playerOneName);
 
         playerOneCard.ActiveColour = Colour.BLUE;
         playerOneCard.ActiveValue = Value.DRAW2;
 
-        game.Pile.ActiveColour = Colour.BLUE;
+        game.Deck.Pile.ActiveColour = Colour.BLUE;
 
         //Act
         game.UpdateGameState(playerOneName, playerOneCard.ActiveValue, playerOneCard.ActiveColour, Colour.BLUE);
 
         //Assert
-        Card[] actual = game.Cards.Where(card =>
+        Card[] actual = game.Deck.Cards.Where(card =>
                                         card.Owner?.Name == playerOneName &&
                                         !card.IsPlayed)
                                      .ToArray();
@@ -275,24 +294,67 @@ public class PileTest
         //Arrange
         const string playerName = "Timmy";
         string[] players = { playerName };
-        Deck game = new(players, "test");
-        game.DrawCard(playerName);
-        Card playerCard = game.DrawCard(playerName);
+        var pile = new Pile(players);
+
+        var cardFactory = new Mock<ICardFactory>(MockBehavior.Strict);
+
+        cardFactory
+            .Setup(m => m.GetAllCards())
+            .Returns(InitialiseTestCards(pile));
+
+        cardFactory
+            .Setup(m => m.GetPile())
+            .Returns(pile);
+
+        cardFactory
+            .Setup(m => m.GetNumberOfCards())
+            .Returns(0);
+
+        Game game = new(players, cardFactory.Object);
+        game.Deck.DrawCard(playerName);
+        Card playerCard = game.Deck.DrawCard(playerName);
 
         playerCard.ActiveColour = Colour.WILD;
         playerCard.ActiveValue = Value.DRAW4;
 
-        game.Pile.ActiveColour = Colour.BLUE;
+        game.Deck.Pile.ActiveColour = Colour.BLUE;
 
         //Act
         game.UpdateGameState(playerName, playerCard.ActiveValue, playerCard.ActiveColour, Colour.BLUE);
 
         //Assert
-        Card[] actual = game.Cards.Where(card =>
+        Card[] actual = game.Deck.Cards.Where(card =>
                                         card.Owner?.Name == playerName &&
                                         !card.IsPlayed)
                                      .ToArray();
 
         Assert.Equal(5, actual.Length);
+    }
+
+    private Card[] InitialiseTestCards(Pile pile)
+    {
+        Card[] testCards =
+        {
+            new (pile, Colour.RED, Value.ZERO),
+            new (pile, Colour.RED, Value.ONE),
+            new (pile, Colour.RED, Value.ONE),
+            new (pile, Colour.RED, Value.TWO),
+            new (pile, Colour.RED, Value.TWO),
+            new (pile, Colour.RED, Value.THREE),
+            new (pile, Colour.RED, Value.THREE),
+            new (pile, Colour.RED, Value.FOUR),
+            new (pile, Colour.RED, Value.FOUR),
+            new (pile, Colour.RED, Value.FIVE),
+            new (pile, Colour.RED, Value.FIVE),
+            new (pile, Colour.RED, Value.SIX),
+            new (pile, Colour.RED, Value.SIX),
+            new (pile, Colour.RED, Value.SEVEN),
+            new (pile, Colour.RED, Value.SEVEN),
+            new (pile, Colour.RED, Value.EIGHT),
+            new (pile, Colour.RED, Value.EIGHT),
+            new (pile, Colour.RED, Value.NINE),
+            new (pile, Colour.RED, Value.NINE),
+        };
+        return testCards;
     }
 }

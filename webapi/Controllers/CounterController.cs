@@ -9,7 +9,7 @@ namespace webapi.Controllers;
 [Route("[controller]/[action]")]
 public class CounterController : ControllerBase
 { 
-    static Dictionary<string, Deck> games = new ();
+    static Dictionary<string, Game> games = new ();
 
     [HttpGet()]
     public DeckDTO NewGame()
@@ -17,7 +17,7 @@ public class CounterController : ControllerBase
         string[] players = { "Timmy", "Jimmy" };
         if (!games.ContainsKey("password"))
         {
-            Deck unoGame = new(players);
+            Game unoGame = new(players);
             games["password"] = unoGame;
             return new DeckDTO(unoGame, players[0], null);
         } else
@@ -25,7 +25,7 @@ public class CounterController : ControllerBase
             var unoGame = games["password"];
             if(unoGame.PlayerHasNoCardsInHand())
             {
-                return new DeckDTO(unoGame, players[1], unoGame.Pile.Owner!.Name);
+                return new DeckDTO(unoGame, players[1], unoGame.Deck.Pile.Owner!.Name);
             }
             return new DeckDTO(games["password"], players[1], null);
         } 
@@ -35,7 +35,7 @@ public class CounterController : ControllerBase
     public DeckDTO DrawCard(NameDTO playerId)
     {
         var unoGame = games["password"];
-        unoGame.DrawCard(playerId.Name!);
+        unoGame.Deck.DrawCard(playerId.Name!);
 
         return new DeckDTO(unoGame, playerId.Name!, null);
     }
@@ -74,7 +74,7 @@ public class CounterController : ControllerBase
     {
         var game = games["password"];
 
-        return new PlayerDTO(game, playerId.Name!);
+        return new PlayerDTO(game.Deck, playerId.Name!);
     }
 
     //[HttpPost()]

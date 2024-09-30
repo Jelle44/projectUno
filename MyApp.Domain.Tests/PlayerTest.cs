@@ -117,12 +117,12 @@ public class PlayerTest
     {
         //Arrange
         string[] names = { "Timmy", "Jimmy" };
-        Deck game = new(names);
+        Game game = new(names);
 
         //Act
-        game.DrawCard("Timmy");
+        game.Deck.DrawCard("Timmy");
 
         //Assert
-        Assert.Equal("Timmy", game.Pile.Owner!.Name);
+        Assert.Equal("Timmy", game.Deck.Pile.Owner!.Name);
     }
 }

@@ -4,5 +4,6 @@
     {
         Card[] GetAllCards();
         Pile GetPile();
+        int GetNumberOfCards();
     }
 }

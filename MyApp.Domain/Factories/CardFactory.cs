@@ -39,6 +39,11 @@ namespace MyApp.Domain.Factories
             CreateColourChangeCards(_pile);
         }
 
+        public int GetNumberOfCards()
+        {
+            return _allCards.Count;
+        }
+
         private void CreateCardOfEachValueForColour(Pile pile, Colour colour)
         {
             if (colour == Colour.WILD)

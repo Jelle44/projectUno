@@ -16,24 +16,24 @@ public class DeckDTO
 
     public bool IsGameOver { get; set; } = false;
 
-    public DeckDTO(Deck uno, string playerId, string? winner)
+    public DeckDTO(Game uno, string playerId, string? winner)
     {
         PlayerId = playerId;
-        Counter = uno.Counter;
-        HandSizePlayerOne = uno.Cards.Where(card =>
+        Counter = uno.Deck.Counter;
+        HandSizePlayerOne = uno.Deck.Cards.Where(card =>
                                             card.Owner?.Name == "Timmy" &&
                                             !card.IsPlayed)
                                      .ToArray()
                                      .Length;
-        HandSizePlayerTwo = uno.Cards.Where(card =>
+        HandSizePlayerTwo = uno.Deck.Cards.Where(card =>
                                             card.Owner?.Name == "Jimmy" &&
                                             !card.IsPlayed)
                                      .ToArray()
                                      .Length;
         Player = new PlayerDTO[1];
-        Player[0] = new PlayerDTO(uno, playerId);
+        Player[0] = new PlayerDTO(uno.Deck, playerId);
 
-        PileTopCard = new CardDTO(uno.Pile);
+        PileTopCard = new CardDTO(uno.Deck.Pile);
 
         if (winner != null)
         {

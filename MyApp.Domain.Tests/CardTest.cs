@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
+using Moq;
 using MyApp.Domain.Enums;
+using MyApp.Domain.Factories;
 using Xunit;
 using static MyApp.Domain.Card;
 
@@ -89,17 +91,33 @@ public class CardTest
         const string playerOneName = "Timmy";
         const string playerTwoName = "Jimmy";
         string[] players = { playerOneName, playerTwoName };
-        Deck game = new (players, "Test constructor");
-        Card card = game.DrawCard(playerOneName);
-        game.DrawCard(playerTwoName);
+        var pile = new Pile(players);
+
+        var cardFactory = new Mock<ICardFactory>(MockBehavior.Strict);
+
+        cardFactory
+            .Setup(m => m.GetAllCards())
+            .Returns(InitialiseTestCards(pile));
+
+        cardFactory
+            .Setup(m => m.GetPile())
+            .Returns(pile);
+
+        cardFactory
+            .Setup(m => m.GetNumberOfCards())
+            .Returns(0);
+
+        Game game = new (players, cardFactory.Object);
+        Card card = game.Deck.DrawCard(playerOneName);
+        game.Deck.DrawCard(playerTwoName);
 
         Card[] playerHand = { card };
 
         //Act
-        PlayCard(game, playerHand, card.ActiveValue, card.ActiveColour, card.ActiveColour);
+        PlayCard(game.Deck, playerHand, card.ActiveValue, card.ActiveColour, card.ActiveColour);
 
         //Assert
-        Assert.Equal(card.Owner, game.Pile.Owner);
+        Assert.Equal(card.Owner, game.Deck.Pile.Owner);
         Assert.Equal(card.ActiveValue, card.Pile.ActiveValue);
         Assert.Equal(card.ActiveColour, card.Pile.ActiveColour);
     }
@@ -111,19 +129,35 @@ public class CardTest
         const string playerOneName = "Timmy";
         const string playerTwoName = "Jimmy";
         string[] players = { playerOneName, playerTwoName };
-        Deck game = new (players, "testConstructor");
+        var pile = new Pile(players);
 
-        Card cardTimmy = game.DrawCard(playerOneName);
-        game.DrawCard(playerTwoName);
-        game.DrawCard(playerOneName);
+        var cardFactory = new Mock<ICardFactory>(MockBehavior.Strict);
 
-        game.Pile.Owner = game.Pile.Owner!.GetPlayerByName(playerTwoName);
+        cardFactory
+            .Setup(m => m.GetAllCards())
+            .Returns(InitialiseTestCards(pile));
+
+        cardFactory
+            .Setup(m => m.GetPile())
+            .Returns(pile);
+
+        cardFactory
+            .Setup(m => m.GetNumberOfCards())
+            .Returns(0);
+
+        Game game = new (players, cardFactory.Object);
+
+        Card cardTimmy = game.Deck.DrawCard(playerOneName);
+        game.Deck.DrawCard(playerTwoName);
+        game.Deck.DrawCard(playerOneName);
+
+        game.Deck.Pile.Owner = game.Deck.Pile.Owner!.GetPlayerByName(playerTwoName);
 
         //Act
         game.UpdateGameState(playerOneName, cardTimmy.ActiveValue, cardTimmy.ActiveColour, cardTimmy.ActiveColour);
 
         //Assert
-        Card[] actual = game.Cards.Where(unoCard =>
+        Card[] actual = game.Deck.Cards.Where(unoCard =>
                                             unoCard.Owner?.Name == playerTwoName &&
                                             !unoCard.IsPlayed)
                                      .ToArray();
@@ -161,5 +195,32 @@ public class CardTest
         var actual = card.Path;
         actual.Should().NotBeNull();
         actual.Should().Be(expected);
+    }
+
+    private Card[] InitialiseTestCards(Pile pile)
+    {
+        Card[] testCards =
+        {
+            new (pile, Colour.RED, Value.ZERO),
+            new (pile, Colour.RED, Value.ONE),
+            new (pile, Colour.RED, Value.ONE),
+            new (pile, Colour.RED, Value.TWO),
+            new (pile, Colour.RED, Value.TWO),
+            new (pile, Colour.RED, Value.THREE),
+            new (pile, Colour.RED, Value.THREE),
+            new (pile, Colour.RED, Value.FOUR),
+            new (pile, Colour.RED, Value.FOUR),
+            new (pile, Colour.RED, Value.FIVE),
+            new (pile, Colour.RED, Value.FIVE),
+            new (pile, Colour.RED, Value.SIX),
+            new (pile, Colour.RED, Value.SIX),
+            new (pile, Colour.RED, Value.SEVEN),
+            new (pile, Colour.RED, Value.SEVEN),
+            new (pile, Colour.RED, Value.EIGHT),
+            new (pile, Colour.RED, Value.EIGHT),
+            new (pile, Colour.RED, Value.NINE),
+            new (pile, Colour.RED, Value.NINE),
+        };
+        return testCards;
     }
 }
