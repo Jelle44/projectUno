@@ -9,7 +9,7 @@ namespace webapi.Controllers;
 [Route("[controller]/[action]")]
 public class CounterController : ControllerBase
 { 
-    static Dictionary<string, Deck> games = new Dictionary<string, Deck>();
+    static Dictionary<string, Deck> games = new ();
 
     [HttpGet()]
     public DeckDTO NewGame()
