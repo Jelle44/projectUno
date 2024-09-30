@@ -30,11 +30,11 @@ public class Deck
         Pile.SetPileTopCardForStartGame(this, players);
     }
 
-    public Deck(string[] players, string testConstructor)
+    internal Deck(string[] players, string testConstructor)
     {
-        this.Counter = 108;
-        this.Pile = new Pile(players);
-        this.Cards = InitialiseTestCards(this.Pile);
+        Counter = 108;
+        Pile = new Pile(players);
+        Cards = InitialiseTestCards(Pile);
     }
 
     public static int DecreaseCounter(int number)
@@ -131,20 +131,20 @@ public class Deck
         if (activeCards.Length == 0)
         {
             activeCards = ReshuffleDeck();
-            this.Counter = activeCards.Length;
+            Counter = activeCards.Length;
         }
 
         Card drawnCard = activeCards[GetRandomNumber(activeCards)];
         drawnCard.Owner = Pile.Owner!.GetPlayerByName(playerName);
 
-        this.Counter = DecreaseCounter(this.Counter);
+        Counter = DecreaseCounter(Counter);
 
         return drawnCard;
     }
 
     private Card[] ReshuffleDeck()
     {
-        Card[] shuffledDeck = this.Cards.Where(card => card.IsPlayed).ToArray();
+        Card[] shuffledDeck = Cards.Where(card => card.IsPlayed).ToArray();
 
         foreach (Card card in shuffledDeck)
         {
