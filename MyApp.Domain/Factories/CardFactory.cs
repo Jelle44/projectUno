@@ -67,8 +67,10 @@ namespace MyApp.Domain.Factories
 
         private void CreateColourChangeCards(Pile pile)
         {
-            CreateMultipleCards(4, pile, Colour.WILD, Value.CHANGE);
-            CreateMultipleCards(4, pile, Colour.WILD, Value.DRAW4);
+            const int numberOfCardsToCreate = 4;
+
+            CreateMultipleCards(numberOfCardsToCreate, pile, Colour.WILD, Value.CHANGE);
+            CreateMultipleCards(numberOfCardsToCreate, pile, Colour.WILD, Value.DRAW4);
         }
 
         internal void CreateMultipleCards(int numberToCreate, Pile pile, Colour colour, Value value)
