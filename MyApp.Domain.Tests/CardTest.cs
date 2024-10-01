@@ -108,7 +108,7 @@ public class CardTest
             .Returns(0);
 
         Game game = new (players, cardFactory.Object);
-        Card card = game.Deck.DrawCard(playerOneName);
+        var card = game.Deck.DrawCard(playerOneName);
         game.Deck.DrawCard(playerTwoName);
 
         Card[] playerHand = { card };
@@ -147,7 +147,7 @@ public class CardTest
 
         Game game = new (players, cardFactory.Object);
 
-        Card cardTimmy = game.Deck.DrawCard(playerOneName);
+        var cardTimmy = game.Deck.DrawCard(playerOneName);
         game.Deck.DrawCard(playerTwoName);
         game.Deck.DrawCard(playerOneName);
 
@@ -157,7 +157,7 @@ public class CardTest
         game.UpdateGameState(playerOneName, cardTimmy.ActiveValue, cardTimmy.ActiveColour, cardTimmy.ActiveColour);
 
         //Assert
-        Card[] actual = game.Deck.Cards.Where(unoCard =>
+        var actual = game.Deck.Cards.Where(unoCard =>
                                             unoCard.Owner?.Name == playerTwoName &&
                                             !unoCard.IsPlayed)
                                      .ToArray();

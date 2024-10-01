@@ -45,7 +45,7 @@ public class GameTest
 
         Game game = new(players, cardFactory.Object);
         game.Deck.Pile.Owner!.Uno = true;
-        Card card = game.Deck.DrawCard("Timmy");
+        var card = game.Deck.DrawCard("Timmy");
         game.Deck.Pile.Owner.PreviousPlayer.Uno = true;
 
         //Act
@@ -63,7 +63,7 @@ public class GameTest
         Game game = new(players);
 
         //Act
-        Card[] handTimmy = game.Deck.Cards.Where(unoCard =>
+        var handTimmy = game.Deck.Cards.Where(unoCard =>
                 unoCard.Owner?.Name == "Timmy" &&
                 !unoCard.IsPlayed)
             .ToArray();
@@ -96,11 +96,11 @@ public class GameTest
         Game game = new(players, cardFactory.Object);
 
         //Act
-        Card cardTimmy = game.Deck.DrawCard("Timmy");
+        var cardTimmy = game.Deck.DrawCard("Timmy");
         cardTimmy.ActiveValue = Value.SKIP;
         game.Deck.DrawCard("Jimmy");
 
-        Card otherCard = game.Deck.DrawCard("Timmy");
+        var otherCard = game.Deck.DrawCard("Timmy");
         game.Deck.DrawCard("Jimmy");
 
         Card[] playerHand = { cardTimmy, otherCard };
@@ -122,7 +122,7 @@ public class GameTest
         game.UnoButtonWasPressed("Timmy");
 
         //Assert
-        Card[] actual = game.Deck.Cards.Where(unoCard =>
+        var actual = game.Deck.Cards.Where(unoCard =>
                 unoCard.Owner?.Name == "Timmy" &&
                 !unoCard.IsPlayed)
             .ToArray();

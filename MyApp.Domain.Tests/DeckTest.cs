@@ -66,7 +66,7 @@ public class DeckTest
 
         game.Deck.DrawMultipleCards("Timmy", 19);
 
-        Card[] playerHand = game.Deck.Cards.Where(unoCard =>
+        var playerHand = game.Deck.Cards.Where(unoCard =>
                                             unoCard.Owner?.Name == "Timmy" &&
                                             !unoCard.IsPlayed)
                                       .ToArray();
