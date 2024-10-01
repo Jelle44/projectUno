@@ -45,17 +45,17 @@ public class CounterController : ControllerBase
     {
         var unoGame = games["password"];
 
-        Colour colour = Enum.Parse<Colour>(card.Colour!);
-        Value value = Enum.Parse<Value>(card.Value!);
+        var colour = Enum.Parse<Colour>(card.Colour!);
+        var value = Enum.Parse<Value>(card.Value!);
 
-        Colour newColour = colour;
+        var newColour = colour;
         if (card.NewColour != null)
         { 
             newColour = Enum.Parse<Colour>(card.NewColour.ToUpper());
         }
 
-        string? winner = unoGame.UpdateGameState(card.Name!, value, colour, newColour);
-        string cardOwner = card.Name!;
+        var winner = unoGame.UpdateGameState(card.Name!, value, colour, newColour);
+        var cardOwner = card.Name!;
 
         return new DeckDTO(unoGame, cardOwner, winner);
     }

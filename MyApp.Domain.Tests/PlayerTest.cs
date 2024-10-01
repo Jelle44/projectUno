@@ -1,6 +1,4 @@
-﻿using Moq;
-using MyApp.Domain.Factories;
-using Xunit;
+﻿using Xunit;
 
 namespace MyApp.Domain.Tests;
 public class PlayerTest

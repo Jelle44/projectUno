@@ -15,7 +15,22 @@ public class Game
 
     internal Game(string[] players, ICardFactory cardFactory)
     {
-        Deck = new Deck(players, cardFactory);
+        Deck = new Deck(cardFactory);
+
+        if (Deck.Counter > 0)
+        {
+            StartGame(players);
+        }
+    }
+
+    private void StartGame(string[] players)
+    {
+        foreach (var player in players)
+        {
+            Deck.DrawMultipleCards(player, 7);
+        }
+
+        Deck.Pile.SetPileTopCardForStartGame(Deck, players);
     }
 
     internal void CheckForgottenUno(string playerName)
@@ -50,10 +65,10 @@ public class Game
 
     private bool CheckUno(string playerName)
     {
-        Card[] playerHand = GetPlayerHand(playerName);
-        Player playerWithPossibleUno = Deck.Pile.Owner!.GetPlayerByName(playerName);
+        var playerHand = GetPlayerHand(playerName);
+        var playerWithPossibleUno = Deck.Pile.Owner!.GetPlayerByName(playerName);
 
-        Player playerOfLastCard = Deck.Pile.Owner;
+        var playerOfLastCard = Deck.Pile.Owner;
 
         if (Deck.Pile.ActiveValue == Value.SKIP)
         {
@@ -67,7 +82,7 @@ public class Game
     public string? UpdateGameState(string name, Value value, Colour colour, Colour newColour)
     {
         CheckForgottenUno(Deck.Pile.Owner!.Name);
-        Card[] playerHand = GetPlayerHand(name);
+        var playerHand = GetPlayerHand(name);
         Card.PlayCard(Deck, playerHand, value, colour, newColour);
 
         if (PlayerHasNoCardsInHand())
@@ -80,7 +95,7 @@ public class Game
 
     private string EndGame()
     {
-        foreach (Card card in Deck.Cards)
+        foreach (var card in Deck.Cards)
         {
             card.IsPlayed = true;
         }

@@ -269,7 +269,7 @@ public class PileTest
 
         Game game = new (players, cardFactory.Object);
         game.Deck.DrawCard(playerOneName);
-        Card playerOneCard = game.Deck.DrawCard(playerOneName);
+        var playerOneCard = game.Deck.DrawCard(playerOneName);
 
         playerOneCard.ActiveColour = Colour.BLUE;
         playerOneCard.ActiveValue = Value.DRAW2;
@@ -280,7 +280,7 @@ public class PileTest
         game.UpdateGameState(playerOneName, playerOneCard.ActiveValue, playerOneCard.ActiveColour, Colour.BLUE);
 
         //Assert
-        Card[] actual = game.Deck.Cards.Where(card =>
+        var actual = game.Deck.Cards.Where(card =>
                                         card.Owner?.Name == playerOneName &&
                                         !card.IsPlayed)
                                      .ToArray();
@@ -312,7 +312,7 @@ public class PileTest
 
         Game game = new(players, cardFactory.Object);
         game.Deck.DrawCard(playerName);
-        Card playerCard = game.Deck.DrawCard(playerName);
+        var playerCard = game.Deck.DrawCard(playerName);
 
         playerCard.ActiveColour = Colour.WILD;
         playerCard.ActiveValue = Value.DRAW4;
@@ -323,7 +323,7 @@ public class PileTest
         game.UpdateGameState(playerName, playerCard.ActiveValue, playerCard.ActiveColour, Colour.BLUE);
 
         //Assert
-        Card[] actual = game.Deck.Cards.Where(card =>
+        var actual = game.Deck.Cards.Where(card =>
                                         card.Owner?.Name == playerName &&
                                         !card.IsPlayed)
                                      .ToArray();

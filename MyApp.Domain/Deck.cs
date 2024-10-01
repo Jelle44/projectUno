@@ -5,31 +5,16 @@ namespace MyApp.Domain;
 
 public class Deck
 {
-    public int Counter { get; set; }
+    public int Counter { get; private set; }
 
     public Pile Pile { get; }
     public Card[] Cards { get; }
 
-    internal Deck(string[] players, ICardFactory cardFactory)
+    internal Deck(ICardFactory cardFactory)
     {
         Pile = cardFactory.GetPile();
         Cards = cardFactory.GetAllCards();
         Counter = cardFactory.GetNumberOfCards();
-
-        if (Counter > 0)
-        {
-            StartGame(players);
-        }
-    }
-
-    private void StartGame(string[] players)
-    {
-        foreach (var player in players)
-        {
-            DrawMultipleCards(player, 7);
-        }
-
-        Pile.SetPileTopCardForStartGame(this, players);
     }
 
     public static int DecreaseCounter(int number)
@@ -81,7 +66,7 @@ public class Deck
 
     internal Card GetCompleteCard(string playerName)
     {
-        Card[] activeCards = GetActiveCards();
+        var activeCards = GetActiveCards();
 
         if (activeCards.Length == 0)
         {
@@ -89,7 +74,7 @@ public class Deck
             Counter = activeCards.Length;
         }
 
-        Card drawnCard = activeCards[GetRandomNumber(activeCards)];
+        var drawnCard = activeCards[GetRandomNumber(activeCards)];
         drawnCard.Owner = Pile.Owner!.GetPlayerByName(playerName);
 
         Counter = DecreaseCounter(Counter);
@@ -99,9 +84,9 @@ public class Deck
 
     private Card[] ReshuffleDeck()
     {
-        Card[] shuffledDeck = Cards.Where(card => card.IsPlayed).ToArray();
+        var shuffledDeck = Cards.Where(card => card.IsPlayed).ToArray();
 
-        foreach (Card card in shuffledDeck)
+        foreach (var card in shuffledDeck)
         {
             card.IsPlayed = false;
             card.Owner = null;
@@ -123,9 +108,9 @@ public class Deck
             .ToArray();
     }
 
-    private static int GetRandomNumber(Card[] cards)
+    private static int GetRandomNumber(IReadOnlyCollection<Card> cards)
     {
         Random rnd = new();
-        return rnd.Next(0, (cards.Length));
+        return rnd.Next(0, (cards.Count));
     }
 }
