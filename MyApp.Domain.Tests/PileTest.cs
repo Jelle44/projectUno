@@ -12,7 +12,8 @@ public class PileTest
     public void TestPileExists()
     {
         //Arrange
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
 
         //Act
         Pile pile = new(players);
@@ -25,7 +26,8 @@ public class PileTest
     public void TestPileHasOwner()
     {
         //Arrange
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
 
         //Act
         Pile pile = new(players);
@@ -39,7 +41,8 @@ public class PileTest
     {
         //Arrange
         const Colour expectedStartingValueOfPile = Colour.WILD;
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
 
         //Act
         Pile pile = new(players);
@@ -52,7 +55,8 @@ public class PileTest
     public void TestPileHasActiveValue()
     {
         //Arrange
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
 
         //Act
         Pile pile = new(players);
@@ -65,7 +69,8 @@ public class PileTest
     public void TestPileHasTurnOrder()
     {
         //Arrange
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
 
         //Act
         Pile pile = new(players);
@@ -78,7 +83,8 @@ public class PileTest
     public void TestPileAllowsSameColour()
     {
         //Arrange
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
         Game game = new(players);
         Pile pile = new(players)
         { 
@@ -103,7 +109,8 @@ public class PileTest
     public void TestPileAllowsSameValueDifferentColour()
     {
         //Arrange
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
         Game game = new(players);
         Pile pile = new(players)
         {

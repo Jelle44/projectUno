@@ -12,7 +12,8 @@ public class CardTest
     public void TestCardExists()
     {
         //Arrange
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
         Pile pile = new(players);
 
         //Act
@@ -45,7 +46,8 @@ public class CardTest
     {
         //Arrange
         const Colour expectedColour = Colour.BLUE;
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
         Pile pile = new(players);
 
         //Act
@@ -60,7 +62,8 @@ public class CardTest
     {
         //Arrange
         const Value expectedValue = Value.EIGHT;
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
         Pile pile = new(players);
 
         //Act
@@ -74,7 +77,8 @@ public class CardTest
     public void TestCardHasBoolIsPlayed()
     {
         //Arrange
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
         Pile pile = new(players);
 
         //Act

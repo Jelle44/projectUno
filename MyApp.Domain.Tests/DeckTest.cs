@@ -12,7 +12,8 @@ public class DeckTest
     public void TestUno()
     {
         //Arrange
-        string[] playerOne = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] playerOne = { playerName };
 
         //Act
         Game uno = new(playerOne);
@@ -31,11 +32,12 @@ public class DeckTest
     public void TestDrawCardCreatesCard()
     {
         //Arrange
-        string[] playerOne = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] playerOne = { playerName };
         Game game = new(playerOne);
 
         //Act
-        var hand = game.Deck.DrawCard("Timmy");
+        var hand = game.Deck.DrawCard(playerName);
 
         //Assert
         Assert.True(hand.GetType() == typeof(Card));
@@ -45,7 +47,8 @@ public class DeckTest
     public void TestDeckReshufflesWhenEmpty()
     {
         //Arrange
-        string[] players = { "Timmy" };
+        const string playerName = "Timmy";
+        string[] players = { playerName };
         var pile = new Pile(players);
 
         var cardFactory = new Mock<ICardFactory>(MockBehavior.Strict);
@@ -64,20 +67,20 @@ public class DeckTest
 
         Game game = new(players, cardFactory.Object);
 
-        game.Deck.DrawMultipleCards("Timmy", 19);
+        game.Deck.DrawMultipleCards(playerName, 19);
 
         var playerHand = game.Deck.Cards.Where(unoCard =>
-                                            unoCard.Owner?.Name == "Timmy" &&
+                                            unoCard.Owner?.Name == playerName &&
                                             !unoCard.IsPlayed)
                                       .ToArray();
 
         //Act
         PlayCard(game.Deck, playerHand, Value.ZERO, Colour.RED, Colour.RED);
-        game.Deck.DrawCard("Timmy");
+        game.Deck.DrawCard(playerName);
 
         //Assert
         playerHand = game.Deck.Cards.Where(unoCard =>
-                                            unoCard.Owner?.Name == "Timmy" &&
+                                            unoCard.Owner?.Name == playerName &&
                                             !unoCard.IsPlayed)
                                .ToArray();
 
