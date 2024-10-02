@@ -130,6 +130,7 @@ public class CardTest
     public void TestPlayCardChecksForUno()
     {
         //Arrange
+        const int expectedHandSize = 3;
         const string playerOneName = "Timmy";
         const string playerTwoName = "Jimmy";
         string[] players = { playerOneName, playerTwoName };
@@ -166,7 +167,7 @@ public class CardTest
                                             !unoCard.IsPlayed)
                                      .ToArray();
 
-        Assert.Equal(3, actual.Length);
+        Assert.Equal(expectedHandSize, actual.Length);
     }
 
     [Fact]

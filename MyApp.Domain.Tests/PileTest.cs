@@ -255,6 +255,7 @@ public class PileTest
     public void TestDrawTwoDrawsTwo()
     {
         //Arrange
+        const int expectedHandSize = 3;
         const string playerOneName = "Timmy";
         string[] players = { playerOneName };
 
@@ -292,13 +293,14 @@ public class PileTest
                                         !card.IsPlayed)
                                      .ToArray();
 
-        Assert.Equal(3, actual.Length);
+        Assert.Equal(expectedHandSize, actual.Length);
     }
 
     [Fact]
     public void TestDrawFourDrawsFour()
     {
         //Arrange
+        const int expectedHandSize = 5;
         const string playerName = "Timmy";
         string[] players = { playerName };
         var pile = new Pile(players);
@@ -335,7 +337,7 @@ public class PileTest
                                         !card.IsPlayed)
                                      .ToArray();
 
-        Assert.Equal(5, actual.Length);
+        Assert.Equal(expectedHandSize, actual.Length);
     }
 
     private Card[] InitialiseTestCards(Pile pile)

@@ -12,20 +12,28 @@ public class DeckTest
     public void TestUno()
     {
         //Arrange
+        const int expectedDeckSizeAfterStartingHandsAndPileAreRemoved = 100;
         const string playerName = "Timmy";
         string[] playerOne = { playerName };
 
         //Act
-        Game uno = new(playerOne);
+        Game game = new(playerOne);
 
         //Assert
-        Assert.Equal(100, uno.Deck.Counter);
+        Assert.Equal(expectedDeckSizeAfterStartingHandsAndPileAreRemoved, game.Deck.Counter);
     }
 
     [Fact]
     public void TestUnoCounter()
     {
-        Assert.Equal(107, Deck.DecreaseCounter(108));
+        //Arrange
+        const int expectedCounter = 107;
+        const int startingNumber = 108;
+
+        //Act
+        var actual = Deck.DecreaseCounter(startingNumber);
+
+        Assert.Equal(expectedCounter, actual);
     }
 
     [Fact]
@@ -47,6 +55,8 @@ public class DeckTest
     public void TestDeckReshufflesWhenEmpty()
     {
         //Arrange
+        const int expectedAmountOfCardsDrawn = 19;
+        const int numberOfCardsToDraw = 19;
         const string playerName = "Timmy";
         string[] players = { playerName };
         var pile = new Pile(players);
@@ -67,7 +77,7 @@ public class DeckTest
 
         Game game = new(players, cardFactory.Object);
 
-        game.Deck.DrawMultipleCards(playerName, 19);
+        game.Deck.DrawMultipleCards(playerName, numberOfCardsToDraw);
 
         var playerHand = game.Deck.Cards.Where(unoCard =>
                                             unoCard.Owner?.Name == playerName &&
@@ -84,7 +94,7 @@ public class DeckTest
                                             !unoCard.IsPlayed)
                                .ToArray();
 
-        Assert.Equal(19, playerHand.Length);
+        Assert.Equal(expectedAmountOfCardsDrawn, playerHand.Length);
     }
 
     private Card[] InitialiseTestCards(Pile pile)

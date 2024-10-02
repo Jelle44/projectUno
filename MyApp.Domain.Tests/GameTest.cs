@@ -12,6 +12,7 @@ public class GameTest
     public void TestGetPlayerNamesListReturnsListOfAllPlayerNames()
     {
         //Arrange
+        const int expectedNumberOfPlayers = 3;
         const string playerOneName = "Timmy";
         const string playerTwoName = "Jimmy";
         const string playerThreeName = "Barney";
@@ -19,10 +20,10 @@ public class GameTest
         Game game = new(players);
 
         //Act
-        var list = game.CreatePlayerList(playerOneName);
+        var playerNames = game.CreatePlayerList(playerOneName);
 
         //Assert
-        Assert.Equal(3, list.Length);
+        Assert.Equal(expectedNumberOfPlayers, playerNames.Length);
     }
 
     [Fact]
@@ -64,18 +65,19 @@ public class GameTest
     public void TestGameStartsWithSevenCardsInEachHand()
     {
         //Arrange
+        const int expectedStartingHandSize = 7;
         const string playerName = "Timmy";
         string[] players = { playerName };
         Game game = new(players);
 
         //Act
-        var handTimmy = game.Deck.Cards.Where(unoCard =>
+        var playerHand = game.Deck.Cards.Where(unoCard =>
                 unoCard.Owner?.Name == playerName &&
                 !unoCard.IsPlayed)
             .ToArray();
 
         //Assert
-        Assert.Equal(7, handTimmy.Length);
+        Assert.Equal(expectedStartingHandSize, playerHand.Length);
     }
 
     [Fact]
@@ -123,6 +125,7 @@ public class GameTest
     public void TestFalseUnoDrawsCards()
     {
         //Arrange
+        const int expectedHandSize = 9;
         const string playerName = "Timmy";
         string[] playerOne = { playerName };
         Game game = new(playerOne);
@@ -136,7 +139,7 @@ public class GameTest
                 !unoCard.IsPlayed)
             .ToArray();
 
-        Assert.Equal(9, actual.Length);
+        Assert.Equal(expectedHandSize, actual.Length);
     }
 
     [Fact]
