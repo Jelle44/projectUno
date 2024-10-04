@@ -1,5 +1,5 @@
 ﻿using MyApp.Domain;
-using static MyApp.Domain.CardSuperClass;
+using MyApp.Domain.Enums;
 using System.Text.Json.Serialization;
 
 namespace webapi.Models

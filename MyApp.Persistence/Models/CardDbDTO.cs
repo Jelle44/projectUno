@@ -1,7 +1,7 @@
 ﻿using MyApp.Domain;
-using static MyApp.Domain.CardSuperClass;
-using System.Text.Json.Serialization;
+using MyApp.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MyApp.Persistence.Models;
 public class CardDbDTO
