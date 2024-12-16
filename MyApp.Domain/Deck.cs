@@ -1,34 +1,40 @@
+using MyApp.Domain.Enums;
 using MyApp.Domain.Exceptions;
-using System.Diagnostics;
-using static MyApp.Domain.CardSuperClass;
+using MyApp.Domain.Factories;
 
 namespace MyApp.Domain;
 
 public class Deck
 {
-    public int Counter { get ; set; }
+    public int Counter { get; set; }
 
     public Pile Pile { get; }
     public Card[] Cards { get; }
-    public Deck(string[] players)
-    {
-        this.Counter = 108;
-        this.Pile = new Pile(players);
-        this.Cards = InitialiseAllCards(this.Pile);
 
-        foreach (string player in players)
+    public Deck(string[] players)
+        : this(players, new CardFactory(new Pile(players)))
+    {
+    }
+
+    private Deck(string[] players, ICardFactory cardFactory)
+    {
+        Pile = cardFactory.GetPile();
+        Cards = cardFactory.GetAllCards();
+        Counter = Cards.Length;
+
+        foreach (var player in players)
         {
             DrawMultipleCards(player, 7);
         }
 
-        this.Pile.SetPileTopCardForStartGame(this, players);
+        Pile.SetPileTopCardForStartGame(this, players);
     }
 
-    public Deck(string[] players, string testConstructor)
+    internal Deck(string[] players, string testConstructor)
     {
-        this.Counter = 108;
-        this.Pile = new Pile(players);
-        this.Cards = InitialiseTestCards(this.Pile);
+        Counter = 108;
+        Pile = new Pile(players);
+        Cards = InitialiseTestCards(Pile);
     }
 
     public static int DecreaseCounter(int number)
@@ -40,10 +46,10 @@ public class Deck
 
     public Card DrawCard(string playerName)
     {
-        if (this.Pile.DrawIsValid(playerName))
+        if (Pile.DrawIsValid(playerName))
         {
             CheckNumCardsInHand(playerName);
-            this.Pile.Owner = this.Pile.ChangeTurn();
+            Pile.Owner = Pile.ChangeTurn();
 
             return GetCompleteCard(playerName);
         }
@@ -61,7 +67,7 @@ public class Deck
 
     private void CheckNumCardsInHand(string playerName)
     {
-        if(PlayerHasUno(playerName))
+        if (PlayerHasUno(playerName))
         {
             Pile.Owner!.GetPlayerByName(playerName).UpdateUno();
         }
@@ -109,7 +115,7 @@ public class Deck
 
         Player playerOfLastCard = Pile.Owner;
 
-        if(Pile.ActiveValue == Value.SKIPTURN)
+        if (Pile.ActiveValue == Value.SKIP)
         {
             playerOfLastCard = Pile.GetOwnerOfSkipTurn();
         }
@@ -125,20 +131,20 @@ public class Deck
         if (activeCards.Length == 0)
         {
             activeCards = ReshuffleDeck();
-            this.Counter = activeCards.Length;
+            Counter = activeCards.Length;
         }
 
         Card drawnCard = activeCards[GetRandomNumber(activeCards)];
         drawnCard.Owner = Pile.Owner!.GetPlayerByName(playerName);
 
-        this.Counter = DecreaseCounter(this.Counter);
+        Counter = DecreaseCounter(Counter);
 
         return drawnCard;
     }
 
     private Card[] ReshuffleDeck()
     {
-        Card[] shuffledDeck = this.Cards.Where(card => card.IsPlayed).ToArray();
+        Card[] shuffledDeck = Cards.Where(card => card.IsPlayed).ToArray();
 
         foreach (Card card in shuffledDeck)
         {
@@ -155,10 +161,11 @@ public class Deck
 
     private Card[] GetActiveCards()
     {
-        return this.Cards.Where(card =>
-                                card.Owner == null &&
-                                !card.IsPlayed)
-                         .ToArray();
+        return Cards
+            .Where(card =>
+                card.Owner == null &&
+                !card.IsPlayed)
+            .ToArray();
     }
 
     private static int GetRandomNumber(Card[] cards)
@@ -167,7 +174,7 @@ public class Deck
         return rnd.Next(0, (cards.Length));
     }
 
-    public string? UpdateGameState(string name, CardSuperClass.Value value, CardSuperClass.Colour colour, CardSuperClass.Colour newColour)
+    public string? UpdateGameState(string name, Value value, Colour colour, Colour newColour)
     {
         CheckForgottenUno(Pile.Owner!.Name);
         Card[] playerHand = GetPlayerHand(name);
@@ -183,7 +190,7 @@ public class Deck
 
     private string EndGame()
     {
-        foreach (Card card in this.Cards)
+        foreach (Card card in Cards)
         {
             card.IsPlayed = true;
         }
@@ -193,172 +200,58 @@ public class Deck
 
     private string Winner()
     {
-        return this.Pile.Owner!.Name;
+        return Pile.Owner!.Name;
     }
 
     public bool PlayerHasNoCardsInHand()
     {
-        var owner = this.Pile.Owner;
+        var owner = Pile.Owner;
 
-        if(Pile.ActiveValue == Value.SKIPTURN)
+        if (Pile.ActiveValue == Value.SKIP)
         {
             owner = Pile.GetOwnerOfSkipTurn();
         }
 
-        return (this.Cards.Where(card =>
-                                    card.Owner == owner &&
-                                    !card.IsPlayed)
-                          .ToArray()
-                          .Length == 0);
+        return (Cards
+            .Where(card =>
+                card.Owner == owner &&
+                !card.IsPlayed)
+            .ToArray()
+            .Length == 0);
     }
 
     public Card[] GetPlayerHand(string name)
     {
-        return this.Cards.Where(unoCard =>
-                                 unoCard.Owner?.Name == name &&
-                                 !unoCard.IsPlayed)
-                         .ToArray();
+        return Cards
+            .Where(unoCard => 
+                unoCard.Owner?.Name == name &&
+                !unoCard.IsPlayed)
+            .ToArray();
     }
 
-    private static Card[] InitialiseAllCards(Pile pile)
-    { //every card is in the list twice, DRAW_FOUR & RECOLOUR each have 4 copies, every colour has only ONE 0.
-        Card[] allCards = new Card[]
-                {
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.ZERO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red0.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red1.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red1.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red2.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red2.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red3.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red3.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red4.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red4.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red5.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red5.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red6.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red6.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red7.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red7.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red8.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red8.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red9.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red9.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.DRAW_TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-reddraw2.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.DRAW_TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-reddraw2.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.REVERSE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-redreverse.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.REVERSE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-redreverse.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SKIPTURN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-redskip.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SKIPTURN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-redskip.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.ZERO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow0.png"},
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow1.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow1.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow2.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow2.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow3.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow3.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow4.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow4.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow5.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow5.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow6.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow6.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow7.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow7.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow8.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow8.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow9.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellow9.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.DRAW_TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellowdraw2.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.DRAW_TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellowdraw2.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.REVERSE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellowreverse.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.REVERSE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellowreverse.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.SKIPTURN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellowskip.png" },
-                new Card(pile) {ActiveColour = Colour.YELLOW, ActiveValue = Value.SKIPTURN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-yellowskip.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.ZERO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green0.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green1.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green1.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green2.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green2.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green3.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green3.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green4.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green4.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green5.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green5.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green6.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green6.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green7.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green7.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green8.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green8.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green9.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-green9.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.DRAW_TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-greendraw2.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.DRAW_TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-greendraw2.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.REVERSE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-greenreverse.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.REVERSE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-greenreverse.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.SKIPTURN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-greenskip.png" },
-                new Card(pile) {ActiveColour = Colour.GREEN, ActiveValue = Value.SKIPTURN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-greenskip.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.ZERO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue0.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue1.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue1.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue2.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue2.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue3.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue3.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue4.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue4.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue5.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue5.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue6.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue6.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue7.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue7.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue8.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue8.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue9.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blue9.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.DRAW_TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-bluedraw2.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.DRAW_TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-bluedraw2.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.REVERSE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-bluereverse.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.REVERSE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-bluereverse.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.SKIPTURN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blueskip.png" },
-                new Card(pile) {ActiveColour = Colour.BLUE, ActiveValue = Value.SKIPTURN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-blueskip.png" },
-                new Card(pile) {ActiveColour = Colour.ALL, ActiveValue = Value.RECOLOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-wildchange.png"},
-                new Card(pile) {ActiveColour = Colour.ALL, ActiveValue = Value.RECOLOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-wildchange.png"},
-                new Card(pile) {ActiveColour = Colour.ALL, ActiveValue = Value.RECOLOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-wildchange.png"},
-                new Card(pile) {ActiveColour = Colour.ALL, ActiveValue = Value.RECOLOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-wildchange.png"},
-                new Card(pile) {ActiveColour = Colour.ALL,ActiveValue = Value.DRAW_FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-wilddraw4.png"},
-                new Card(pile) {ActiveColour = Colour.ALL,ActiveValue = Value.DRAW_FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-wilddraw4.png"},
-                new Card(pile) {ActiveColour = Colour.ALL,ActiveValue = Value.DRAW_FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-wilddraw4.png"},
-                new Card(pile) {ActiveColour = Colour.ALL,ActiveValue = Value.DRAW_FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-wilddraw4.png"}
-                };
-        return allCards;
-    }
-
-    private static Card[] InitialiseTestCards(Pile pile)
+    internal static Card[] InitialiseTestCards(Pile pile)
     {
-        Card[] testCards = new Card[]
+        Card[] testCards =
                 {
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.ZERO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red0.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red1.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.ONE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red1.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red2.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.TWO, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red2.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red3.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.THREE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red3.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red4.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FOUR, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red4.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red5.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.FIVE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red5.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red6.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SIX, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red6.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red7.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.SEVEN, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red7.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red8.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.EIGHT, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red8.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red9.png" },
-                new Card(pile) {ActiveColour = Colour.RED, ActiveValue = Value.NINE, Path = "http://unocardinfo.victorhomedia.com/graphics/uno_card-red9.png" },
+                new (pile, Colour.RED, Value.ZERO),
+                new (pile, Colour.RED, Value.ONE),
+                new (pile, Colour.RED, Value.ONE),
+                new (pile, Colour.RED, Value.TWO),
+                new (pile, Colour.RED, Value.TWO),
+                new (pile, Colour.RED, Value.THREE),
+                new (pile, Colour.RED, Value.THREE),
+                new (pile, Colour.RED, Value.FOUR),
+                new (pile, Colour.RED, Value.FOUR),
+                new (pile, Colour.RED, Value.FIVE),
+                new (pile, Colour.RED, Value.FIVE),
+                new (pile, Colour.RED, Value.SIX),
+                new (pile, Colour.RED, Value.SIX),
+                new (pile, Colour.RED, Value.SEVEN),
+                new (pile, Colour.RED, Value.SEVEN),
+                new (pile, Colour.RED, Value.EIGHT),
+                new (pile, Colour.RED, Value.EIGHT),
+                new (pile, Colour.RED, Value.NINE),
+                new (pile, Colour.RED, Value.NINE),
                 };
         return testCards;
     }

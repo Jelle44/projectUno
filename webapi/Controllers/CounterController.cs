@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MyApp.Domain;
-using System.Text.Json;
+using MyApp.Domain.Enums;
 using webapi.Models;
 
 namespace webapi.Controllers;
@@ -9,7 +9,7 @@ namespace webapi.Controllers;
 [Route("[controller]/[action]")]
 public class CounterController : ControllerBase
 { 
-    static Dictionary<string, Deck> games = new Dictionary<string, Deck>();
+    static Dictionary<string, Deck> games = new ();
 
     [HttpGet()]
     public DeckDTO NewGame()
@@ -45,13 +45,13 @@ public class CounterController : ControllerBase
     {
         var unoGame = games["password"];
 
-        CardSuperClass.Colour colour = Enum.Parse<CardSuperClass.Colour>(card.Colour!);
-        CardSuperClass.Value value = Enum.Parse<CardSuperClass.Value>(card.Value!);
+        Colour colour = Enum.Parse<Colour>(card.Colour!);
+        Value value = Enum.Parse<Value>(card.Value!);
 
-        CardSuperClass.Colour newColour = colour;
+        Colour newColour = colour;
         if (card.NewColour != null)
         { 
-            newColour = Enum.Parse<CardSuperClass.Colour>(card.NewColour.ToUpper());
+            newColour = Enum.Parse<Colour>(card.NewColour.ToUpper());
         }
 
         string? winner = unoGame.UpdateGameState(card.Name!, value, colour, newColour);
